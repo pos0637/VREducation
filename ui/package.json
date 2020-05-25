@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
+    "blockly": "git+https://github.com/pos0637/blockly.git",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",
