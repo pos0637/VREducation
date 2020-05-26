@@ -4,10 +4,13 @@ import router from './router';
 import store from './store';
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+import VueIntro from 'vue-introjs';
+import 'intro.js/introjs.css';
 
 Vue.config.productionTip = false;
 
 Vue.use(Antd);
+Vue.use(VueIntro);
 
 new Vue({
     router,

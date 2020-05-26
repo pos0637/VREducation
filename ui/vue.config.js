@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
 function resolve(dir) {
@@ -24,7 +25,10 @@ module.exports = {
                     from: path.resolve(__dirname, './node_modules/blockly/media'),
                     to: path.resolve(__dirname, './public/media')
                 }
-            ])
+            ]),
+            new webpack.ProvidePlugin({
+                introJs: ['intro.js']
+            })
         ]
     }
 };

@@ -4,8 +4,9 @@
         <a-row type="flex" style="flex-grow: 1">
             <div id="editor" style="width: 100%; height: 100%" />
         </a-row>
-        <a-row type="flex" align="bottom" style="height: 120px">
+        <a-row type="flex" align="bottom" style="height: 200px">
             <div id="inspector">inspector</div>
+            <button @click="initializeTours()">start</button>
         </a-row>
     </a-layout>
 </template>
@@ -101,27 +102,16 @@ export default {
             };
 
             this.toolbox = `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-                    <category name="设备控制">
-                        <block type="wait_for_sensor_signal">
-                            <field name="sensor">光电传感器</field>
-                        </block>
-                        <block type="camera_snapshot"></block>
-                    </category>
-                    <category name="阈值算子">
-                    </category>
-                    <category name="形态学算子">
-                    </category>
-                    <category name="定位算子">
-                        <block type="text_print"></block>
-                    </category>
-                    <category name="逻辑控制">
-                        <block type="variables_get">
-                            <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                        </block>
-                        <block type="variables_set">
-                            <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                        </block>
-                    </category>
+                    <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
+                        <field name="sensor">光电传感器</field>
+                    </block>
+                    <block type="camera_snapshot" id="camera_snapshot"></block>
+                    <block type="variables_get">
+                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+                    </block>
+                    <block type="variables_set">
+                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+                    </block>
                 </xml>`;
 
             this.eventHandler = eventHandler;
@@ -159,6 +149,26 @@ export default {
 
             this.workspace = Blockly.inject(container, options);
             // this.workspace.addChangeListener(this._eventHandler.bind(this));
+        },
+        initializeTours() {
+            this.$intro()
+                .setOptions({
+                    tooltipPosition: 'auto',
+                    steps: [
+                        {
+                            intro: 'Hello world!'
+                        },
+                        {
+                            element: document.querySelectorAll('[data-id="wait_for_sensor_signal"]')[0],
+                            intro: '<div style="width: 300px; height: 300px">Hello</div>'
+                        },
+                        {
+                            element: document.querySelectorAll('[data-id="camera_snapshot"]')[0],
+                            intro: 'step2'
+                        }
+                    ]
+                })
+                .start();
         }
     }
 };
