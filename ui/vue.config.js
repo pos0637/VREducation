@@ -1,4 +1,6 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
 function resolve(dir) {
     return path.join(__dirname, dir);
 }
@@ -15,6 +17,14 @@ module.exports = {
             alias: {
                 '@': resolve('src')
             }
-        }
+        },
+        plugins: [
+            new CopyPlugin([
+                {
+                    from: path.resolve(__dirname, './node_modules/blockly/media'),
+                    to: path.resolve(__dirname, './public/media')
+                }
+            ])
+        ]
     }
 };

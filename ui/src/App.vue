@@ -3,7 +3,6 @@
         <div id="nav">
             <component v-bind:is="content"></component>
         </div>
-        <button @click="onChangeScene">变换</button>
     </div>
 </template>
 
@@ -14,10 +13,13 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    width: 100%;
+    height: 100%;
 }
 
 #nav {
-    padding: 30px;
+    width: 100%;
+    height: 100%;
 }
 
 #nav a {
@@ -32,7 +34,7 @@
 
 <script>
 import Home from '@/views/Home';
-import About from '@/views/About';
+import Experiment from '@/scenes/Experiment';
 
 export default {
     name: 'app',
@@ -40,9 +42,9 @@ export default {
         content() {
             const scene = this.$store.state.scene;
             if (scene === 'splash') {
-                return Home;
+                return Experiment;
             } else {
-                return About;
+                return Home;
             }
         }
     },

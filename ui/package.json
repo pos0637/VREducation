@@ -8,8 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "ant-design-vue": "^1.6.1",
     "babel-polyfill": "^6.26.0",
-    "blockly": "git+https://github.com/pos0637/blockly.git",
+    "blockly": "^3.20200402.1",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",
