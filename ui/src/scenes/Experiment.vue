@@ -83,7 +83,7 @@ export default {
                     helpUrl: '',
                     javascript: block => {
                         var number_exposure = block.getFieldValue('exposure');
-                        var code = `camera_snapshot(${number_exposure})`;
+                        var code = `top.window.camera_snapshot(${number_exposure})`;
                         return [code, Blockly.JavaScript.ORDER_NONE];
                     }
                 },
@@ -107,7 +107,7 @@ export default {
                     tooltip: '等待指定的传感器信号。',
                     helpUrl: 'http://www.baidu.com',
                     javascript: () => {
-                        return 'wait_for_sensor_signal();\n';
+                        return 'top.window.wait_for_sensor_signal();\n';
                     }
                 }
             ],
@@ -153,12 +153,12 @@ export default {
                         intro: '<div style="width: 300px; height: 300px">第二步: 工业相机曝光度实验</div>'
                     },
                     {
-                        elementId: '[data-id="wait_for_sensor_signal"]',
-                        intro: '<div style="width: 300px; height: 300px">Hello</div>'
+                        elementId: '[data-id="camera_snapshot"]',
+                        intro: '<div style="width: 300px; height: 300px">设置 相机拍照 功能块曝光值为2000</div>'
                     },
                     {
-                        elementId: '[data-id="camera_snapshot"]',
-                        intro: 'step2'
+                        elementId: '[data-id="run_button"]',
+                        intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
                     }
                 ]
             ],
@@ -195,10 +195,31 @@ export default {
                             intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
                             buttons: ['run_button'],
                             workspace: null,
-                            expect: null
+                            expect: () => true
                         }
                     ]
-                }
+                },
+                {
+                    name: '工业相机曝光度实验',
+                    steps: [
+                        {
+                            name: 'step1',
+                            intro: '设置 相机拍照 功能块曝光值为2000',
+                            blocks: ['wait_for_sensor_signal'],
+                            workspace:
+                                '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">10000</field></block></value></block></next></block></xml>',
+                            expect:
+                                '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">2000</field></block></value></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step2',
+                            intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                            buttons: ['run_button'],
+                            workspace: null,
+                            expect: () => true
+                        }
+                    ]
+                },
             ],
             eventHandler: {
                 startExperiment: experiment => {
@@ -213,15 +234,28 @@ export default {
             currentStep: null
         };
     },
+    mounted() {
+        top.window.camera_snapshot = function(exposure) {
+            alert(exposure);
+        };
+
+        top.window.wait_for_sensor_signal = function() {
+            alert('wait_for_sensor_signal');
+        };
+    },
     methods: {
         _onTourComplete(id) {
             if (id === 0) {
                 this.$refs.codeEditor.startExperiment(0);
+            } else if (id === 1) {
+                this.$refs.codeEditor.startExperiment(1);
             }
         },
         _onExperimentComplete(id) {
             if (id === 0) {
                 this.$refs.codeEditor.startTour(1);
+            } else if (id === 1) {
+                alert('实验完成,请进入实验考核单元');
             }
         }
     }

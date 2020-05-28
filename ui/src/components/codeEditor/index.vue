@@ -6,7 +6,7 @@
         </a-row>
         <a-row type="flex" align="bottom" style="height: 200px">
             <div id="inspector">inspector</div>
-            <a-button type="primary" icon="right-square" style="margin-left: 16px" v-bind:disabled="buttons.run_button">运行</a-button>
+            <a-button type="primary" icon="right-square" style="margin-left: 16px" v-bind:disabled="buttons.run_button" @click="_runCode()">运行</a-button>
             <button @click="startTour(0)">start</button>
             <button @click="_generateXml()">dump</button>
             <button @click="_generateCode()">generate</button>
@@ -208,6 +208,11 @@ export default {
         _runCode() {
             try {
                 eval(this._generateCode());
+                if (this.experimentMode && this.experiment !== null) {
+                    if (this.experiment._step.expect && this.experiment._step.expect()) {
+                        this._onExperimentStepComplete(this.experiment);
+                    }
+                }
             } catch (e) {
                 console.debug(e);
             }
@@ -215,13 +220,9 @@ export default {
         _eventHandler(event) {
             console.debug(event);
             if (this.experimentMode && this.experiment !== null) {
-                if (event.element === 'dragStop') {
+                if (event.element === 'field' || event.element === 'dragStop') {
                     if (this._compareXml(this.experiment._step.expect)) {
-                        this.eventHandler && this.eventHandler['experimentStepComplete'] && this.eventHandler['experimentStepComplete'](this.experiment);
-                        if (!this.nextexperiment()) {
-                            this.eventHandler && this.eventHandler['experimentComplete'] && this.eventHandler['experimentComplete'](this.experiment);
-                            this._onExperimentComplete(this.experiment);
-                        }
+                        this._onExperimentStepComplete(this.experiment);
                     }
                 }
             }
@@ -229,6 +230,14 @@ export default {
         _onTourComplete(id) {
             console.debug(`tour complete: ${id}`);
             this.onTourComplete && this.onTourComplete(id);
+        },
+        _onExperimentStepComplete(experiment) {
+            console.debug(`experiment step complete: ${experiment.experiment}, ${experiment.step}`);
+            this.eventHandler && this.eventHandler['experimentStepComplete'] && this.eventHandler['experimentStepComplete'](experiment);
+            if (!this.nextexperiment()) {
+                this.eventHandler && this.eventHandler['experimentComplete'] && this.eventHandler['experimentComplete'](experiment);
+                this._onExperimentComplete(experiment);
+            }
         },
         _onExperimentComplete(experiment) {
             console.debug(`experiment complete: ${experiment.experiment}`);

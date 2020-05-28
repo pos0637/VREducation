@@ -1,7 +1,9 @@
 <template>
     <a-layout id="framework" class="layout">
         <a-layout-header>
-            <img src="@/assets/ding.png" style="height: 48px; margin-left: 15%" />
+            <div class="header-line">
+                <img src="@/assets/ding.png" style="height: 48px; margin-left: 15%" />
+            </div>
         </a-layout-header>
         <a-layout class="layout">
             <a-layout-sider>
@@ -72,12 +74,18 @@
 }
 
 #framework .ant-layout-header {
-    height: 48px;
+    height: 24px;
     text-align: left;
-    line-height: 48px;
+    line-height: 24px;
     position: relative;
     background: #292929;
     color: #fff;
+    padding: 0;
+}
+
+#framework .header-line {
+    height: 24px;
+    border-bottom: 2px solid #a7a726;
 }
 
 #framework .ant-layout-sider {
@@ -115,6 +123,8 @@
 #framework .ant-layout-content {
     width: 100%;
     height: 100%;
+    padding-top: 26px;
+    background-color: #292929;
 }
 </style>
 
