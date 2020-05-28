@@ -6,7 +6,9 @@
         </a-row>
         <a-row type="flex" align="bottom" style="height: 200px">
             <div id="inspector">inspector</div>
+            <a-button type="primary" icon="right-square" style="margin-left: 16px" v-bind:disabled="buttons.run_button">运行</a-button>
             <button @click="startTour(0)">start</button>
+            <button @click="_generateXml()">dump</button>
             <button @click="_generateCode()">generate</button>
         </a-row>
     </a-layout>
@@ -22,34 +24,28 @@ export default {
     name: 'CodeEditor',
     props: {
         blocks: Array,
-        toolbox: String,
+        toolbox: Element,
         tours: Array,
-        experiments: Array
+        experiments: Array,
+        eventHandler: Object,
+        onTourComplete: Function,
+        onExperimentComplete: Function
     },
     data: function() {
         return {
-            container: null,
             workspace: null,
-            eventHandler: null,
             experimentMode: false,
-            experimentStep: null
+            experiment: null,
+            buttons: {
+                run_button: false
+            }
         };
     },
     mounted: function() {
-        this.initialize(document.getElementById('editor'), {
-            startStage: function() {
-                alert('stage start');
-            },
-            stopStage: function() {
-                alert('stage over');
-            },
-            startStep: function() {
-                alert('step start');
-            }
-        });
+        this.initialize(document.getElementById('editor'));
     },
     methods: {
-        initialize(container, eventHandler) {
+        initialize(container) {
             Blockly.setLocale(Zh);
             Blockly.defineBlocksWithJsonArray(this.blocks);
 
@@ -58,9 +54,6 @@ export default {
                     Blockly.JavaScript[item.type] = block => item.javascript(block);
                 }
             }
-
-            this.container = container;
-            this.eventHandler = eventHandler;
 
             const options = {
                 toolbox: this.toolbox,
@@ -111,7 +104,9 @@ export default {
                 prevLabel: '上一步',
                 skipLabel: '跳过',
                 doneLabel: '开始实验',
-                tooltipPosition: 'auto'
+                tooltipPosition: 'auto',
+                exitOnEsc: false,
+                exitOnOverlayClick: false
             };
 
             this.$intro()
@@ -119,15 +114,37 @@ export default {
                 .onexit(() => this._onTourComplete(id))
                 .start();
         },
-        startExperiment(id) {
-            const step = this.experiments[id];
+        startExperiment(experimentId, stepId = 0) {
+            if (stepId >= this.experiments[experimentId].steps.length) {
+                return false;
+            }
+
+            const step = this.experiments[experimentId].steps[stepId];
             this._disableAllBlocks();
             this._enableBlocks(step.blocks);
-            this._loadXml(step.workspace);
-            this.eventHandler && this.eventHandler['startStep'] && this.eventHandler['startStep'](step);
+            this._disableAllButtons();
+            this._enableButtons(step.buttons);
+            step.workspace && this._loadXml(step.workspace);
+            this.experimentMode = true;
+            this.experiment = { experiment: experimentId, step: stepId, _step: step };
+            this.eventHandler && this.eventHandler['startExperiment'] && this.eventHandler['startExperiment'](this.experiment);
+
+            return true;
+        },
+        nextexperiment() {
+            return this.startExperiment(this.experiment.experiment, ++this.experiment.step);
         },
         _enableBlocks(blocks) {
+            if (typeof blocks === 'undefined' || blocks === null) {
+                return;
+            }
+
             for (let i = 0; i < this.toolbox.children.length; i++) {
+                if (blocks.indexOf(this.toolbox.children[i].getAttribute('type')) >= 0) {
+                    this.toolbox.children[i].setAttribute('disabled', false);
+                    continue;
+                }
+
                 const category = this.toolbox.children[i];
                 for (let j = 0; j < category.children.length; j++) {
                     if (blocks.indexOf(category.children[j].getAttribute('type')) >= 0) {
@@ -136,17 +153,32 @@ export default {
                 }
             }
             this.workspace.updateToolbox(this.toolbox);
-            console.log(this.toolbox);
+            console.debug(this.toolbox);
         },
         _disableAllBlocks() {
             for (let i = 0; i < this.toolbox.children.length; i++) {
+                this.toolbox.children[i].setAttribute('disabled', true);
                 const category = this.toolbox.children[i];
                 for (let j = 0; j < category.children.length; j++) {
                     category.children[j].setAttribute('disabled', true);
                 }
             }
             this.workspace.updateToolbox(this.toolbox);
-            console.log(this.toolbox);
+            console.debug(this.toolbox);
+        },
+        _enableButtons(buttons) {
+            if (typeof buttons === 'undefined' || buttons === null) {
+                return;
+            }
+
+            for (const button of buttons) {
+                this.buttons[button] = false;
+            }
+        },
+        _disableAllButtons() {
+            for (const button in this.buttons) {
+                this.buttons[button] = true;
+            }
         },
         _generateXml() {
             const xml = Blockly.Xml.workspaceToDom(this.workspace);
@@ -181,17 +213,27 @@ export default {
             }
         },
         _eventHandler(event) {
-            console.log(event);
-            if (this.experimentMode && this.experimentStep !== null) {
+            console.debug(event);
+            if (this.experimentMode && this.experiment !== null) {
                 if (event.element === 'dragStop') {
-                    if (this._compareXml(this.experimentStep._step.expect)) {
-                        this.eventHandler && this.eventHandler['stopStep'] && this.eventHandler['stopStep'](this.experimentStep);
+                    if (this._compareXml(this.experiment._step.expect)) {
+                        this.eventHandler && this.eventHandler['experimentStepComplete'] && this.eventHandler['experimentStepComplete'](this.experiment);
+                        if (!this.nextexperiment()) {
+                            this.eventHandler && this.eventHandler['experimentComplete'] && this.eventHandler['experimentComplete'](this.experiment);
+                            this._onExperimentComplete(this.experiment);
+                        }
                     }
                 }
             }
         },
         _onTourComplete(id) {
             console.debug(`tour complete: ${id}`);
+            this.onTourComplete && this.onTourComplete(id);
+        },
+        _onExperimentComplete(experiment) {
+            console.debug(`experiment complete: ${experiment.experiment}`);
+            this.experimentMode = false;
+            this.onExperimentComplete && this.onExperimentComplete(experiment.experiment);
         }
     }
 };

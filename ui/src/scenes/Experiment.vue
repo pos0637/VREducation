@@ -1,14 +1,27 @@
 <template>
     <div id="content">
         <a-layout style="width: 100%; height: 100%">
-            <a-row style="text-align: left">
-                <a-button type="primary" icon="right-square" style="margin-left: 16px">运行</a-button>
-                <a-button type="primary" icon="question" style="margin-left: 16px">帮助</a-button>
-                <a-button type="primary" icon="forward" style="margin-left: 16px">下一步骤实验</a-button>
+            <a-row>
+                <a-col :span="16" style="text-align: left">
+                    <span>当前实验 {{ currentExperiment }} 步骤: {{ currentStep }}</span>
+                </a-col>
+                <a-col :span="8" style="text-align: right">
+                    <a-button type="primary" icon="question" style="margin-left: 16px">帮助</a-button>
+                    <a-button type="primary" icon="forward" style="margin-left: 16px">下一步骤实验</a-button>
+                </a-col>
             </a-row>
             <a-row style="height: 100%">
                 <a-col :span="12" class="codeEditor">
-                    <CodeEditor :blocks="this.blocks" :toolbox="this.toolbox" :tours="this.tours" />
+                    <CodeEditor
+                        ref="codeEditor"
+                        :blocks="blocks"
+                        :toolbox="toolbox"
+                        :tours="tours"
+                        :experiments="experiments"
+                        :eventHandler="eventHandler"
+                        :onTourComplete="_onTourComplete"
+                        :onExperimentComplete="_onExperimentComplete"
+                    />
                 </a-col>
                 <a-col :span="12" class="vr">VR</a-col>
             </a-row>
@@ -98,18 +111,18 @@ export default {
                     }
                 }
             ],
-            toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-                <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
-                    <field name="sensor">光电传感器</field>
-                </block>
-                <block type="camera_snapshot" id="camera_snapshot"></block>
-                <block type="variables_get" id="variable_image_get">
-                    <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                </block>
-                <block type="variables_set" id="variable_image_set">
-                    <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                </block>
-            </xml>`,
+            toolbox: Blockly.Xml.textToDom(`<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+                    <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
+                        <field name="sensor">光电传感器</field>
+                    </block>
+                    <block type="camera_snapshot" id="camera_snapshot"></block>
+                    <block type="variables_get" id="variable_image_get">
+                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+                    </block>
+                    <block type="variables_set" id="variable_image_set">
+                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+                    </block>
+                </xml>`),
             tours: [
                 [
                     {
@@ -117,6 +130,27 @@ export default {
                     },
                     {
                         intro: '<div style="width: 300px; height: 300px">第一步: 图像采集实验</div>'
+                    },
+                    {
+                        elementId: '[data-id="wait_for_sensor_signal"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 等待传感器信号 功能块进入编程界面</div>'
+                    },
+                    {
+                        elementId: '[data-id="variable_image_set"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 设置图片 功能块进入编程界面, 并与 等待传感器信号 功能块连接</div>'
+                    },
+                    {
+                        elementId: '[data-id="camera_snapshot"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 相机拍照 功能块进入编程界面, 并与 设置图片 功能块连接</div>'
+                    },
+                    {
+                        elementId: '[data-id="run_button"]',
+                        intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
+                    }
+                ],
+                [
+                    {
+                        intro: '<div style="width: 300px; height: 300px">第二步: 工业相机曝光度实验</div>'
                     },
                     {
                         elementId: '[data-id="wait_for_sensor_signal"]',
@@ -129,27 +163,67 @@ export default {
                 ]
             ],
             experiments: [
-                [
-                    {
-                        name: 'step1',
-                        blocks: ['wait_for_sensor_signal'],
-                        workspace: '<xml></xml>',
-                        expect:
-                            '<xml><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field></block></xml>'
-                    }
-                ],
-                [
-                    {
-                        name: 'step1',
-                        blocks: ['variables_set', 'camera_snapshot'],
-                        workspace:
-                            '<xml><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field></block></xml>',
-                        expect:
-                            '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!`6">图片</variable></variables><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field><next><block type="variables_set" id="E3y~Xq*QhO]-!Mn)f];r"><field name="VAR" id="]BMrwz6fOMJY=.sIU!`6">图片</field><value name="VALUE"><block type="camera_snapshot" id="`9~=nQ|JjkL()S/]7R8."><field name="exposure">10000</field></block></value></block></next></block></xml>'
-                    }
-                ]
-            ]
+                {
+                    name: '图像采集实验',
+                    steps: [
+                        {
+                            name: 'step1',
+                            intro: '拖拽 等待传感器信号 功能块进入编程界面',
+                            blocks: ['wait_for_sensor_signal'],
+                            workspace: '<xml></xml>',
+                            expect:
+                                '<xml><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field></block></xml>'
+                        },
+                        {
+                            name: 'step2',
+                            intro: '拖拽 设置图片 功能块进入编程界面, 并与 等待传感器信号 功能块连接',
+                            blocks: ['variables_set'],
+                            workspace: null,
+                            expect:
+                                '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="?-d2,=9U[aKnRjqbr++i" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="nPZ`r~|}63pU]CikFm#4"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step3',
+                            intro: '拖拽 相机拍照 功能块进入编程界面, 并与 设置图片 功能块连接',
+                            blocks: ['camera_snapshot'],
+                            workspace: null,
+                            expect:
+                                '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">10000</field></block></value></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step4',
+                            intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                            buttons: ['run_button'],
+                            workspace: null,
+                            expect: null
+                        }
+                    ]
+                }
+            ],
+            eventHandler: {
+                startExperiment: experiment => {
+                    this.currentExperiment = this.experiments[experiment.experiment].name;
+                    this.currentStep = this.experiments[experiment.experiment].steps[experiment.step].intro;
+                },
+                experimentComplete: () => {
+                    this.currentStep = null;
+                }
+            },
+            currentExperiment: null,
+            currentStep: null
         };
+    },
+    methods: {
+        _onTourComplete(id) {
+            if (id === 0) {
+                this.$refs.codeEditor.startExperiment(0);
+            }
+        },
+        _onExperimentComplete(id) {
+            if (id === 0) {
+                this.$refs.codeEditor.startTour(1);
+            }
+        }
     }
 };
 </script>
