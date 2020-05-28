@@ -7,6 +7,7 @@
         <a-row type="flex" align="bottom" style="height: 200px">
             <div id="inspector">inspector</div>
             <button @click="initializeTours()">start</button>
+            <button @click="_generateCode()">generate</button>
         </a-row>
     </a-layout>
 </template>
@@ -19,10 +20,14 @@ import * as Zh from 'blockly/msg/zh-hans';
 
 export default {
     name: 'CodeEditor',
+    props: {
+        blocks: Array,
+        toolbox: String,
+        tours: Array
+    },
     data: function() {
         return {
             workspace: null,
-            toolbox: null,
             eventHandler: null,
             storybook: {},
             storybookMode: false,
@@ -45,74 +50,13 @@ export default {
     methods: {
         initialize(container, toolbox, eventHandler) {
             Blockly.setLocale(Zh);
-            Blockly.defineBlocksWithJsonArray([
-                {
-                    type: 'camera_snapshot',
-                    message0: '相机拍照 曝光值： %1 %2',
-                    args0: [
-                        {
-                            type: 'field_number',
-                            name: 'exposure',
-                            value: 10000,
-                            min: 0,
-                            max: 20000,
-                            precision: 0
-                        },
-                        {
-                            type: 'input_value',
-                            name: 'exportion'
-                        }
-                    ],
-                    output: null,
-                    colour: 120,
-                    tooltip: '相机拍照。',
-                    helpUrl: ''
-                },
-                {
-                    type: 'wait_for_sensor_signal',
-                    message0: '等待传感器信号 %1 %2',
-                    args0: [
-                        {
-                            type: 'field_dropdown',
-                            name: 'sensor',
-                            options: [['光电传感器', '光电传感器']]
-                        },
-                        {
-                            type: 'input_value',
-                            name: 'sensor'
-                        }
-                    ],
-                    previousStatement: null,
-                    nextStatement: null,
-                    colour: 230,
-                    tooltip: '等待指定的传感器信号。',
-                    helpUrl: 'http://www.baidu.com'
+            Blockly.defineBlocksWithJsonArray(this.blocks);
+
+            for (const item of this.blocks) {
+                if (typeof item.javascript !== 'undefined') {
+                    Blockly.JavaScript[item.type] = block => item.javascript(block);
                 }
-            ]);
-
-            Blockly.JavaScript['camera_snapshot'] = function(block) {
-                const number_exposure = block.getFieldValue('exposure');
-                const code = `camera_snapshot(${number_exposure})`;
-                return [code, Blockly.JavaScript.ORDER_NONE];
-            };
-
-            Blockly.JavaScript['wait_for_sensor_signal'] = function() {
-                const code = 'wait_for_sensor_signal();\n';
-                return code;
-            };
-
-            this.toolbox = `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-                    <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
-                        <field name="sensor">光电传感器</field>
-                    </block>
-                    <block type="camera_snapshot" id="camera_snapshot"></block>
-                    <block type="variables_get">
-                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                    </block>
-                    <block type="variables_set">
-                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                    </block>
-                </xml>`;
+            }
 
             this.eventHandler = eventHandler;
 
@@ -148,27 +92,76 @@ export default {
             };
 
             this.workspace = Blockly.inject(container, options);
-            // this.workspace.addChangeListener(this._eventHandler.bind(this));
+            this.workspace.addChangeListener(this._eventHandler.bind(this));
         },
         initializeTours() {
             this.$intro()
-                .setOptions({
-                    tooltipPosition: 'auto',
-                    steps: [
-                        {
-                            intro: 'Hello world!'
-                        },
-                        {
-                            element: document.querySelectorAll('[data-id="wait_for_sensor_signal"]')[0],
-                            intro: '<div style="width: 300px; height: 300px">Hello</div>'
-                        },
-                        {
-                            element: document.querySelectorAll('[data-id="camera_snapshot"]')[0],
-                            intro: 'step2'
-                        }
-                    ]
-                })
+                .setOptions(this.tours[0])
                 .start();
+        },
+        _enableBlocks(blocks) {
+            for (var i = 0; i < this.toolbox.children.length; i++) {
+                var category = this.toolbox.children[i];
+                for (var j = 0; j < category.children.length; j++) {
+                    if (blocks.indexOf(category.children[j].getAttribute('type')) >= 0) {
+                        category.children[j].setAttribute('disabled', false);
+                    }
+                }
+            }
+            this.workspace.updateToolbox(this.toolbox);
+            console.log(this.toolbox);
+        },
+        _disableAllBlocks() {
+            for (var i = 0; i < this.toolbox.children.length; i++) {
+                var category = this.toolbox.children[i];
+                for (var j = 0; j < category.children.length; j++) {
+                    category.children[j].setAttribute('disabled', true);
+                }
+            }
+            this.workspace.updateToolbox(this.toolbox);
+            console.log(this.toolbox);
+        },
+        _generateXml() {
+            var xml = Blockly.Xml.workspaceToDom(this.workspace);
+            console.debug(xml);
+            return xml;
+        },
+        _compareXml(xml) {
+            var reg = xml
+                .replace(/\//g, '\\/')
+                .replace(/id="([^"]*)"/g, 'id="([^\\"]*)"')
+                .replace(/x="([^"]*)"/g, 'x="([^\\"]*)"')
+                .replace(/y="([^"]*)"/g, 'y="([^\\"]*)"');
+            var src = this._generateXml().outerHTML;
+            var pos = src.search(new RegExp(reg));
+            console.debug(pos);
+            return pos === 0;
+        },
+        _loadXml(xml) {
+            var dom = typeof xml === 'string' ? Blockly.Xml.textToDom(xml) : xml;
+            Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, this.workspace);
+        },
+        _generateCode() {
+            var code = Blockly.JavaScript.workspaceToCode(this.workspace);
+            console.debug(code);
+            return code;
+        },
+        _runCode() {
+            try {
+                eval(this._generateCode());
+            } catch (e) {
+                console.debug(e);
+            }
+        },
+        _eventHandler(event) {
+            console.log(event);
+            if (this.storybookMode && this.storybookStep !== null) {
+                if (event.element === 'dragStop') {
+                    if (this._compareXml(this.storybookStep._step.expect)) {
+                        this.eventHandler && this.eventHandler['stopStep'] && this.eventHandler['stopStep'](this.storybookStep);
+                    }
+                }
+            }
         }
     }
 };
