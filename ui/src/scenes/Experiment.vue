@@ -111,22 +111,43 @@ export default {
                 </block>
             </xml>`,
             tours: [
-                {
-                    tooltipPosition: 'auto',
-                    steps: [
-                        {
-                            intro: 'Hello world!'
-                        },
-                        {
-                            element: document.querySelectorAll('[data-id="wait_for_sensor_signal"]')[0],
-                            intro: '<div style="width: 300px; height: 300px">Hello</div>'
-                        },
-                        {
-                            element: document.querySelectorAll('[data-id="camera_snapshot"]')[0],
-                            intro: 'step2'
-                        }
-                    ]
-                }
+                [
+                    {
+                        intro: '<div style="width: 300px; height: 300px">视觉抓取实验介绍</div>'
+                    },
+                    {
+                        intro: '<div style="width: 300px; height: 300px">第一步: 图像采集实验</div>'
+                    },
+                    {
+                        elementId: '[data-id="wait_for_sensor_signal"]',
+                        intro: '<div style="width: 300px; height: 300px">Hello</div>'
+                    },
+                    {
+                        elementId: '[data-id="camera_snapshot"]',
+                        intro: 'step2'
+                    }
+                ]
+            ],
+            experiments: [
+                [
+                    {
+                        name: 'step1',
+                        blocks: ['wait_for_sensor_signal'],
+                        workspace: '<xml></xml>',
+                        expect:
+                            '<xml><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field></block></xml>'
+                    }
+                ],
+                [
+                    {
+                        name: 'step1',
+                        blocks: ['variables_set', 'camera_snapshot'],
+                        workspace:
+                            '<xml><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field></block></xml>',
+                        expect:
+                            '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!`6">图片</variable></variables><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field><next><block type="variables_set" id="E3y~Xq*QhO]-!Mn)f];r"><field name="VAR" id="]BMrwz6fOMJY=.sIU!`6">图片</field><value name="VALUE"><block type="camera_snapshot" id="`9~=nQ|JjkL()S/]7R8."><field name="exposure">10000</field></block></value></block></next></block></xml>'
+                    }
+                ]
             ]
         };
     }

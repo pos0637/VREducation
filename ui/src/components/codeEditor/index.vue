@@ -6,7 +6,7 @@
         </a-row>
         <a-row type="flex" align="bottom" style="height: 200px">
             <div id="inspector">inspector</div>
-            <button @click="initializeTours()">start</button>
+            <button @click="startTour(0)">start</button>
             <button @click="_generateCode()">generate</button>
         </a-row>
     </a-layout>
@@ -23,19 +23,20 @@ export default {
     props: {
         blocks: Array,
         toolbox: String,
-        tours: Array
+        tours: Array,
+        experiments: Array
     },
     data: function() {
         return {
+            container: null,
             workspace: null,
             eventHandler: null,
-            storybook: {},
-            storybookMode: false,
-            storybookStep: null
+            experimentMode: false,
+            experimentStep: null
         };
     },
     mounted: function() {
-        this.initialize('editor', 'toolbox', {
+        this.initialize(document.getElementById('editor'), {
             startStage: function() {
                 alert('stage start');
             },
@@ -48,7 +49,7 @@ export default {
         });
     },
     methods: {
-        initialize(container, toolbox, eventHandler) {
+        initialize(container, eventHandler) {
             Blockly.setLocale(Zh);
             Blockly.defineBlocksWithJsonArray(this.blocks);
 
@@ -58,6 +59,7 @@ export default {
                 }
             }
 
+            this.container = container;
             this.eventHandler = eventHandler;
 
             const options = {
@@ -93,16 +95,41 @@ export default {
 
             this.workspace = Blockly.inject(container, options);
             this.workspace.addChangeListener(this._eventHandler.bind(this));
+            setTimeout(() => {
+                Blockly.svgResize(this.workspace);
+            }, 1);
         },
-        initializeTours() {
+        startTour(id) {
+            for (const step of this.tours[id]) {
+                if (typeof step.elementId !== 'undefined') {
+                    step.element = document.querySelectorAll(step.elementId)[0];
+                }
+            }
+
+            const options = {
+                nextLabel: '下一步',
+                prevLabel: '上一步',
+                skipLabel: '跳过',
+                doneLabel: '开始实验',
+                tooltipPosition: 'auto'
+            };
+
             this.$intro()
-                .setOptions(this.tours[0])
+                .setOptions(Object.assign(options, { steps: this.tours[id] }))
+                .onexit(() => this._onTourComplete(id))
                 .start();
         },
+        startExperiment(id) {
+            const step = this.experiments[id];
+            this._disableAllBlocks();
+            this._enableBlocks(step.blocks);
+            this._loadXml(step.workspace);
+            this.eventHandler && this.eventHandler['startStep'] && this.eventHandler['startStep'](step);
+        },
         _enableBlocks(blocks) {
-            for (var i = 0; i < this.toolbox.children.length; i++) {
-                var category = this.toolbox.children[i];
-                for (var j = 0; j < category.children.length; j++) {
+            for (let i = 0; i < this.toolbox.children.length; i++) {
+                const category = this.toolbox.children[i];
+                for (let j = 0; j < category.children.length; j++) {
                     if (blocks.indexOf(category.children[j].getAttribute('type')) >= 0) {
                         category.children[j].setAttribute('disabled', false);
                     }
@@ -112,9 +139,9 @@ export default {
             console.log(this.toolbox);
         },
         _disableAllBlocks() {
-            for (var i = 0; i < this.toolbox.children.length; i++) {
-                var category = this.toolbox.children[i];
-                for (var j = 0; j < category.children.length; j++) {
+            for (let i = 0; i < this.toolbox.children.length; i++) {
+                const category = this.toolbox.children[i];
+                for (let j = 0; j < category.children.length; j++) {
                     category.children[j].setAttribute('disabled', true);
                 }
             }
@@ -122,27 +149,27 @@ export default {
             console.log(this.toolbox);
         },
         _generateXml() {
-            var xml = Blockly.Xml.workspaceToDom(this.workspace);
+            const xml = Blockly.Xml.workspaceToDom(this.workspace);
             console.debug(xml);
             return xml;
         },
         _compareXml(xml) {
-            var reg = xml
+            const reg = xml
                 .replace(/\//g, '\\/')
                 .replace(/id="([^"]*)"/g, 'id="([^\\"]*)"')
                 .replace(/x="([^"]*)"/g, 'x="([^\\"]*)"')
                 .replace(/y="([^"]*)"/g, 'y="([^\\"]*)"');
-            var src = this._generateXml().outerHTML;
-            var pos = src.search(new RegExp(reg));
+            const src = this._generateXml().outerHTML;
+            const pos = src.search(new RegExp(reg));
             console.debug(pos);
             return pos === 0;
         },
         _loadXml(xml) {
-            var dom = typeof xml === 'string' ? Blockly.Xml.textToDom(xml) : xml;
+            const dom = typeof xml === 'string' ? Blockly.Xml.textToDom(xml) : xml;
             Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, this.workspace);
         },
         _generateCode() {
-            var code = Blockly.JavaScript.workspaceToCode(this.workspace);
+            const code = Blockly.JavaScript.workspaceToCode(this.workspace);
             console.debug(code);
             return code;
         },
@@ -155,13 +182,16 @@ export default {
         },
         _eventHandler(event) {
             console.log(event);
-            if (this.storybookMode && this.storybookStep !== null) {
+            if (this.experimentMode && this.experimentStep !== null) {
                 if (event.element === 'dragStop') {
-                    if (this._compareXml(this.storybookStep._step.expect)) {
-                        this.eventHandler && this.eventHandler['stopStep'] && this.eventHandler['stopStep'](this.storybookStep);
+                    if (this._compareXml(this.experimentStep._step.expect)) {
+                        this.eventHandler && this.eventHandler['stopStep'] && this.eventHandler['stopStep'](this.experimentStep);
                     }
                 }
             }
+        },
+        _onTourComplete(id) {
+            console.debug(`tour complete: ${id}`);
         }
     }
 };

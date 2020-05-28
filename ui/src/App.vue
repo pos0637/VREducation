@@ -33,8 +33,8 @@
 </style>
 
 <script>
+import Splash from '@/views/Splash';
 import Home from '@/views/Home';
-import Experiment from '@/scenes/Experiment';
 
 export default {
     name: 'app',
@@ -42,7 +42,7 @@ export default {
         content() {
             const scene = this.$store.state.scene;
             if (scene === 'splash') {
-                return Experiment;
+                return Splash;
             } else {
                 return Home;
             }
