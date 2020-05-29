@@ -6,6 +6,7 @@
             <button @click="startTour(0)">start</button>
             <button @click="_generateXml()">dump</button>
             <button @click="_generateCode()">generate</button>
+            <button @click="_runCode()">run</button>
             <button @click="_test()">test</button>
         </a-row>
         <a-row type="flex" style="flex-grow: 1">
@@ -19,26 +20,32 @@
             <a-col :span="4" class="inspector_variable_name">{{ variables[4].name }}</a-col>
             <a-col :span="4" class="inspector_variable_name">{{ variables[5].name }}</a-col>
         </a-row>
-        <a-row type="flex" align="bottom" style="height: 200px">
+        <a-row type="flex" align="bottom" style="height: 120px">
             <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[0].id" />
+                <canvas :id="variables[0].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
             </a-col>
             <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[1].id" />
+                <canvas :id="variables[1].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
             </a-col>
             <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[2].id" />
+                <canvas :id="variables[2].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
             </a-col>
             <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[3].id" />
+                <canvas :id="variables[3].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
             </a-col>
             <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[4].id" />
+                <canvas :id="variables[4].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
             </a-col>
             <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[5].id" />
+                <canvas :id="variables[5].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
             </a-col>
         </a-row>
+        <a-modal v-model="imageInspectorVisiable" :title="imageInspectorTitle">
+            <template slot="footer">
+                <span />
+            </template>
+            <img :src="this.imageInspectorData" class="image_inspector" />
+        </a-modal>
     </a-layout>
 </template>
 
@@ -50,6 +57,17 @@
 .inspector_variable_data {
     height: 100%;
     text-align: left;
+}
+
+.inspector_variable_image {
+    width: 100%;
+    height: 100%;
+}
+
+.image_inspector {
+    width: 100%;
+    height: 100%;
+    margin-top: 32px;
 }
 </style>
 
@@ -76,6 +94,9 @@ export default {
             workspace: null,
             experimentMode: false,
             experiment: null,
+            imageInspectorVisiable: false,
+            imageInspectorTitle: null,
+            imageInspectorData: null,
             buttons: {
                 run_button: false
             }
@@ -118,7 +139,7 @@ export default {
                 },
                 zoom: {
                     controls: true,
-                    wheel: true,
+                    wheel: false,
                     startScale: 1,
                     maxScale: 3,
                     minScale: 0.3,
@@ -128,6 +149,7 @@ export default {
 
             this.workspace = Blockly.inject(container, options);
             this.workspace.addChangeListener(this._eventHandler.bind(this));
+            Blockly.svgResize(this.workspace);
             setTimeout(() => {
                 Blockly.svgResize(this.workspace);
             }, 1);
@@ -140,10 +162,10 @@ export default {
             }
 
             const options = {
-                nextLabel: '下一步',
-                prevLabel: '上一步',
-                skipLabel: '跳过',
-                doneLabel: '开始实验',
+                nextLabel: '<span style="font-size: 1.0rem">下一步</span>',
+                prevLabel: '<span style="font-size: 1.0rem">上一步</span>',
+                skipLabel: '<span style="font-size: 1.0rem">跳过</span>',
+                doneLabel: '<span style="font-size: 1.0rem; color: blue">开始实验</span>',
                 tooltipPosition: 'auto',
                 exitOnEsc: false,
                 exitOnOverlayClick: false
@@ -180,14 +202,14 @@ export default {
             }
 
             for (let i = 0; i < this.toolbox.children.length; i++) {
-                if (blocks.indexOf(this.toolbox.children[i].getAttribute('type')) >= 0) {
+                if (blocks.indexOf(this.toolbox.children[i].getAttribute('id')) >= 0) {
                     this.toolbox.children[i].setAttribute('disabled', false);
                     continue;
                 }
 
                 const category = this.toolbox.children[i];
                 for (let j = 0; j < category.children.length; j++) {
-                    if (blocks.indexOf(category.children[j].getAttribute('type')) >= 0) {
+                    if (blocks.indexOf(category.children[j].getAttribute('id')) >= 0) {
                         category.children[j].setAttribute('disabled', false);
                     }
                 }
@@ -283,6 +305,10 @@ export default {
             console.debug(`experiment complete: ${experiment.experiment}`);
             this.experimentMode = false;
             this.onExperimentComplete && this.onExperimentComplete(experiment.experiment);
+        },
+        _onImageInspectorClick(event) {
+            this.imageInspectorData = event.target.toDataURL('image/png');
+            this.imageInspectorVisiable = true;
         },
         _test() {
             top.window.showImage();

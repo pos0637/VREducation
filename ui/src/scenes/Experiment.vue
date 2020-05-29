@@ -11,7 +11,7 @@
                 </a-col>
             </a-row>
             <a-row style="height: 100%">
-                <a-col :span="12" class="codeEditor">
+                <a-col :span="16" class="codeEditor">
                     <CodeEditor
                         ref="codeEditor"
                         :blocks="blocks"
@@ -24,7 +24,7 @@
                         :onExperimentComplete="_onExperimentComplete"
                     />
                 </a-col>
-                <a-col :span="12" class="vr">VR</a-col>
+                <a-col :span="8" class="vr">VR</a-col>
             </a-row>
         </a-layout>
     </div>
@@ -63,7 +63,7 @@ export default {
             blocks: [
                 {
                     type: 'camera_snapshot',
-                    message0: '相机拍照 曝光值： %1 %2',
+                    message0: '相机拍照 曝光值: %1',
                     args0: [
                         {
                             type: 'field_number',
@@ -72,10 +72,6 @@ export default {
                             min: 0,
                             max: 20000,
                             precision: 0
-                        },
-                        {
-                            type: 'input_value',
-                            name: 'exportion'
                         }
                     ],
                     output: null,
@@ -83,23 +79,19 @@ export default {
                     tooltip: '相机拍照。',
                     helpUrl: '',
                     javascript: block => {
-                        var number_exposure = block.getFieldValue('exposure');
-                        var code = `top.window.camera_snapshot(${number_exposure})`;
+                        const number_exposure = block.getFieldValue('exposure');
+                        const code = `top.window.camera_snapshot(${number_exposure})`;
                         return [code, Blockly.JavaScript.ORDER_NONE];
                     }
                 },
                 {
                     type: 'wait_for_sensor_signal',
-                    message0: '等待传感器信号 %1 %2',
+                    message0: '等待传感器信号: %1',
                     args0: [
                         {
                             type: 'field_dropdown',
                             name: 'sensor',
                             options: [['光电传感器', '光电传感器']]
-                        },
-                        {
-                            type: 'input_value',
-                            name: 'sensor'
                         }
                     ],
                     previousStatement: null,
@@ -110,6 +102,173 @@ export default {
                     javascript: () => {
                         return 'top.window.wait_for_sensor_signal();\n';
                     }
+                },
+                {
+                    type: 'threshold',
+                    message0: '二值化 图片: %1 %2 最小值: %3 %4 最大值: %5',
+                    args0: [
+                        {
+                            type: 'field_variable',
+                            name: 'image',
+                            variable: '图片'
+                        },
+                        {
+                            type: 'input_dummy'
+                        },
+                        {
+                            type: 'field_number',
+                            name: 'min',
+                            value: 0,
+                            min: 0,
+                            max: 255,
+                            precision: 0
+                        },
+                        {
+                            type: 'input_dummy'
+                        },
+                        {
+                            type: 'field_number',
+                            name: 'max',
+                            value: 255,
+                            min: 0,
+                            max: 255,
+                            precision: 0
+                        }
+                    ],
+                    inputsInline: false,
+                    output: null,
+                    colour: 120,
+                    tooltip: '二值化',
+                    helpUrl: '',
+                    javascript: block => {
+                        const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
+                        const min = block.getFieldValue('min');
+                        const max = block.getFieldValue('max');
+                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        return [code, Blockly.JavaScript.ORDER_NONE];
+                    }
+                },
+                {
+                    type: 'findcontour',
+                    message0: '提取边缘 图片: %1 %2 最小值: %3 %4 最大值: %5',
+                    args0: [
+                        {
+                            type: 'field_variable',
+                            name: 'image',
+                            variable: '预处理图片'
+                        },
+                        {
+                            type: 'input_dummy'
+                        },
+                        {
+                            type: 'field_number',
+                            name: 'min',
+                            value: 0,
+                            min: 0,
+                            max: 255,
+                            precision: 0
+                        },
+                        {
+                            type: 'input_dummy'
+                        },
+                        {
+                            type: 'field_number',
+                            name: 'max',
+                            value: 255,
+                            min: 0,
+                            max: 255,
+                            precision: 0
+                        }
+                    ],
+                    inputsInline: false,
+                    output: null,
+                    colour: 120,
+                    tooltip: '提取边缘',
+                    helpUrl: '',
+                    javascript: block => {
+                        const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
+                        const min = block.getFieldValue('min');
+                        const max = block.getFieldValue('max');
+                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        return [code, Blockly.JavaScript.ORDER_NONE];
+                    }
+                },
+                {
+                    type: 'findcenter',
+                    message0: '中心点提取 边缘: %1',
+                    args0: [
+                        {
+                            type: 'field_variable',
+                            name: 'image',
+                            variable: '边缘'
+                        }
+                    ],
+                    inputsInline: false,
+                    output: null,
+                    colour: 120,
+                    tooltip: '中心点提取',
+                    helpUrl: '',
+                    javascript: block => {
+                        const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
+                        const min = block.getFieldValue('min');
+                        const max = block.getFieldValue('max');
+                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        return [code, Blockly.JavaScript.ORDER_NONE];
+                    }
+                },
+                {
+                    type: 'shapedetect',
+                    message0: '形状识别 边缘: %1',
+                    args0: [
+                        {
+                            type: 'field_variable',
+                            name: 'image',
+                            variable: '边缘'
+                        }
+                    ],
+                    inputsInline: false,
+                    output: null,
+                    colour: 120,
+                    tooltip: '形状识别',
+                    helpUrl: '',
+                    javascript: block => {
+                        const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
+                        const min = block.getFieldValue('min');
+                        const max = block.getFieldValue('max');
+                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        return [code, Blockly.JavaScript.ORDER_NONE];
+                    }
+                },
+                {
+                    type: 'grab',
+                    message0: '机器人抓取 工件类型: %1 %2 中心点: %3',
+                    args0: [
+                        {
+                            type: 'field_variable',
+                            name: 'type',
+                            variable: '工件类型'
+                        },
+                        {
+                            type: 'input_dummy'
+                        },
+                        {
+                            type: 'field_variable',
+                            name: 'center',
+                            variable: '中心点'
+                        }
+                    ],
+                    inputsInline: false,
+                    output: null,
+                    colour: 120,
+                    tooltip: '机器人抓取',
+                    helpUrl: '',
+                    javascript: block => {
+                        const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
+                        const min = block.getFieldValue('min');
+                        const max = block.getFieldValue('max');
+                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        return [code, Blockly.JavaScript.ORDER_NONE];
+                    }
                 }
             ],
             toolbox: Blockly.Xml.textToDom(`<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
@@ -117,11 +276,25 @@ export default {
                         <field name="sensor">光电传感器</field>
                     </block>
                     <block type="camera_snapshot" id="camera_snapshot"></block>
-                    <block type="variables_get" id="variable_image_get">
-                        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
-                    </block>
+                    <block type="threshold" id="threshold"></block>
+                    <block type="findcontour" id="findcontour"></block>
+                    <block type="findcenter" id="findcenter"></block>
+                    <block type="shapedetect" id="shapedetect"></block>
+                    <block type="grab" id="grab"></block>
                     <block type="variables_set" id="variable_image_set">
                         <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+                    </block>
+                    <block type="variables_set" id="variable_preprocess_image_set">
+                        <field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">预处理图片</field>
+                    </block>
+                    <block type="variables_set" id="variable_contour_set">
+                        <field name="VAR" id="]i17utjfOMJY=.sIUx1m">边缘</field>
+                    </block>
+                    <block type="variables_set" id="variable_center_set">
+                        <field name="VAR" id="82jjstjfOMJY=.s1123c">中心点</field>
+                    </block>
+                    <block type="variables_set" id="variable_sharp_set">
+                        <field name="VAR" id="bgehjfOMJY=.s11o5al1">工件类型</field>
                     </block>
                 </xml>`),
             tours: [
@@ -178,7 +351,7 @@ export default {
                         {
                             name: 'step2',
                             intro: '拖拽 设置图片 功能块进入编程界面, 并与 等待传感器信号 功能块连接',
-                            blocks: ['variables_set'],
+                            blocks: ['variable_image_set'],
                             workspace: null,
                             expect:
                                 '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="?-d2,=9U[aKnRjqbr++i" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="nPZ`r~|}63pU]CikFm#4"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field></block></next></block></xml>'
@@ -245,17 +418,36 @@ export default {
     },
     mounted() {
         top.window.camera_snapshot = function(exposure) {
-            alert(exposure);
+            console.debug(exposure);
+            // eslint-disable-next-line no-undef
+            const mat = cv.Mat.ones(200, 200, cv.CV_8UC3);
+            // eslint-disable-next-line no-undef
+            cv.cvtColor(mat, mat, cv.COLOR_BGR2GRAY);
+            // eslint-disable-next-line no-undef
+            cv.imshow('inspector_variable_image1', mat);
+            return mat;
         };
 
         top.window.wait_for_sensor_signal = function() {
             alert('wait_for_sensor_signal');
         };
+
         top.window.showImage = function() {
             // eslint-disable-next-line no-undef
-            const mat = cv.Mat.ones(7, 7, cv.CV_8UC1);
+            const mat = cv.Mat.ones(200, 200, cv.CV_8UC3);
+            // eslint-disable-next-line no-undef
+            cv.cvtColor(mat, mat, cv.COLOR_BGR2GRAY);
             // eslint-disable-next-line no-undef
             cv.imshow('inspector_variable_image1', mat);
+        };
+
+        top.window.threshold = function(image, min, max) {
+            const dst = image.clone();
+            // eslint-disable-next-line no-undef
+            cv.threshold(image, dst, min, max, cv.THRESH_BINARY);
+            // eslint-disable-next-line no-undef
+            cv.imshow('inspector_variable_image2', dst);
+            return dst;
         };
     },
     methods: {
