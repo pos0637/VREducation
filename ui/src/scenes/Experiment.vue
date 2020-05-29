@@ -18,6 +18,7 @@
                         :toolbox="toolbox"
                         :tours="tours"
                         :experiments="experiments"
+                        :variables="variables"
                         :eventHandler="eventHandler"
                         :onTourComplete="_onTourComplete"
                         :onExperimentComplete="_onExperimentComplete"
@@ -219,7 +220,15 @@ export default {
                             expect: () => true
                         }
                     ]
-                },
+                }
+            ],
+            variables: [
+                { name: '图片', id: 'inspector_variable_image1' },
+                { name: '图片', id: 'inspector_variable_image2' },
+                { name: '图片', id: 'inspector_variable_image3' },
+                { name: '图片', id: 'inspector_variable_image4' },
+                { name: '图片', id: 'inspector_variable_image5' },
+                { name: '图片', id: 'inspector_variable_image6' }
             ],
             eventHandler: {
                 startExperiment: experiment => {
@@ -241,6 +250,12 @@ export default {
 
         top.window.wait_for_sensor_signal = function() {
             alert('wait_for_sensor_signal');
+        };
+        top.window.showImage = function() {
+            // eslint-disable-next-line no-undef
+            const mat = cv.Mat.ones(7, 7, cv.CV_8UC1);
+            // eslint-disable-next-line no-undef
+            cv.imshow('inspector_variable_image1', mat);
         };
     },
     methods: {

@@ -1,18 +1,57 @@
 <template>
     <a-layout>
-        <a-row type="flex">代码编辑器</a-row>
-        <a-row type="flex" style="flex-grow: 1">
-            <div id="editor" style="width: 100%; height: 100%" />
-        </a-row>
-        <a-row type="flex" align="bottom" style="height: 200px">
-            <div id="inspector">inspector</div>
+        <a-row type="flex">
+            代码编辑器
             <a-button type="primary" icon="right-square" style="margin-left: 16px" v-bind:disabled="buttons.run_button" @click="_runCode()">运行</a-button>
             <button @click="startTour(0)">start</button>
             <button @click="_generateXml()">dump</button>
             <button @click="_generateCode()">generate</button>
+            <button @click="_test()">test</button>
+        </a-row>
+        <a-row type="flex" style="flex-grow: 1">
+            <div id="editor" style="width: 100%; height: 100%" />
+        </a-row>
+        <a-row type="flex" align="bottom" style="height: 20px">
+            <a-col :span="4" class="inspector_variable_name">{{ variables[0].name }}</a-col>
+            <a-col :span="4" class="inspector_variable_name">{{ variables[1].name }}</a-col>
+            <a-col :span="4" class="inspector_variable_name">{{ variables[2].name }}</a-col>
+            <a-col :span="4" class="inspector_variable_name">{{ variables[3].name }}</a-col>
+            <a-col :span="4" class="inspector_variable_name">{{ variables[4].name }}</a-col>
+            <a-col :span="4" class="inspector_variable_name">{{ variables[5].name }}</a-col>
+        </a-row>
+        <a-row type="flex" align="bottom" style="height: 200px">
+            <a-col :span="4" class="inspector_variable_data">
+                <canvas :id="variables[0].id" />
+            </a-col>
+            <a-col :span="4" class="inspector_variable_data">
+                <canvas :id="variables[1].id" />
+            </a-col>
+            <a-col :span="4" class="inspector_variable_data">
+                <canvas :id="variables[2].id" />
+            </a-col>
+            <a-col :span="4" class="inspector_variable_data">
+                <canvas :id="variables[3].id" />
+            </a-col>
+            <a-col :span="4" class="inspector_variable_data">
+                <canvas :id="variables[4].id" />
+            </a-col>
+            <a-col :span="4" class="inspector_variable_data">
+                <canvas :id="variables[5].id" />
+            </a-col>
         </a-row>
     </a-layout>
 </template>
+
+<style scoped>
+.inspector_variable_name {
+    text-align: middle;
+}
+
+.inspector_variable_data {
+    height: 100%;
+    text-align: left;
+}
+</style>
 
 <script>
 import Blockly from 'blockly';
@@ -27,6 +66,7 @@ export default {
         toolbox: Element,
         tours: Array,
         experiments: Array,
+        variables: Array,
         eventHandler: Object,
         onTourComplete: Function,
         onExperimentComplete: Function
@@ -243,6 +283,9 @@ export default {
             console.debug(`experiment complete: ${experiment.experiment}`);
             this.experimentMode = false;
             this.onExperimentComplete && this.onExperimentComplete(experiment.experiment);
+        },
+        _test() {
+            top.window.showImage();
         }
     }
 };
