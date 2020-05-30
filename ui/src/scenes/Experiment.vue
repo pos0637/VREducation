@@ -379,7 +379,7 @@ export default {
                         {
                             name: 'step1',
                             intro: '设置 相机拍照 功能块曝光值为2000',
-                            blocks: ['wait_for_sensor_signal'],
+                            blocks: [],
                             workspace:
                                 '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">10000</field></block></value></block></next></block></xml>',
                             expect:
@@ -397,16 +397,17 @@ export default {
             ],
             variables: [
                 { name: '图片', id: 'inspector_variable_image1' },
-                { name: '图片', id: 'inspector_variable_image2' },
-                { name: '图片', id: 'inspector_variable_image3' },
-                { name: '图片', id: 'inspector_variable_image4' },
-                { name: '图片', id: 'inspector_variable_image5' },
+                { name: '预处理图片', id: 'inspector_variable_image2' },
+                { name: '边缘', id: 'inspector_variable_image3' },
+                { name: '中心点', id: 'inspector_variable_image4' },
+                { name: '工件类型', id: 'inspector_variable_image5' },
                 { name: '图片', id: 'inspector_variable_image6' }
             ],
             eventHandler: {
                 startExperiment: experiment => {
                     this.currentExperiment = this.experiments[experiment.experiment].name;
                     this.currentStep = this.experiments[experiment.experiment].steps[experiment.step].intro;
+                    this.$message.success(`${experiment.step > 0 ? '操作成功, 下一步' : ''}${this.currentStep}`, 2);
                 },
                 experimentComplete: () => {
                     this.currentStep = null;

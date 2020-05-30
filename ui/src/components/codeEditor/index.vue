@@ -181,6 +181,10 @@ export default {
                 return false;
             }
 
+            if (this.experiment !== null && experimentId === this.experiment.experiment && stepId === this.experiment.step) {
+                return true;
+            }
+
             const step = this.experiments[experimentId].steps[stepId];
             this._disableAllBlocks();
             this._enableBlocks(step.blocks);
@@ -193,8 +197,8 @@ export default {
 
             return true;
         },
-        nextexperiment() {
-            return this.startExperiment(this.experiment.experiment, ++this.experiment.step);
+        nextExperiment() {
+            return this.startExperiment(this.experiment.experiment, this.experiment.step + 1);
         },
         _enableBlocks(blocks) {
             if (typeof blocks === 'undefined' || blocks === null) {
@@ -296,7 +300,7 @@ export default {
         _onExperimentStepComplete(experiment) {
             console.debug(`experiment step complete: ${experiment.experiment}, ${experiment.step}`);
             this.eventHandler && this.eventHandler['experimentStepComplete'] && this.eventHandler['experimentStepComplete'](experiment);
-            if (!this.nextexperiment()) {
+            if (!this.nextExperiment()) {
                 this.eventHandler && this.eventHandler['experimentComplete'] && this.eventHandler['experimentComplete'](experiment);
                 this._onExperimentComplete(experiment);
             }
