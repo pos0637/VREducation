@@ -62,6 +62,25 @@ export default {
         return {
             blocks: [
                 {
+                    type: 'wait_for_sensor_signal',
+                    message0: '等待传感器信号: %1',
+                    args0: [
+                        {
+                            type: 'field_dropdown',
+                            name: 'sensor',
+                            options: [['光电传感器', '光电传感器']]
+                        }
+                    ],
+                    previousStatement: null,
+                    nextStatement: null,
+                    colour: 230,
+                    tooltip: '等待指定的传感器信号',
+                    helpUrl: '',
+                    javascript: () => {
+                        return 'top.window.wait_for_sensor_signal();\n';
+                    }
+                },
+                {
                     type: 'camera_snapshot',
                     message0: '相机拍照 曝光值: %1',
                     args0: [
@@ -76,31 +95,12 @@ export default {
                     ],
                     output: null,
                     colour: 120,
-                    tooltip: '相机拍照。',
+                    tooltip: '相机拍照',
                     helpUrl: '',
                     javascript: block => {
                         const number_exposure = block.getFieldValue('exposure');
                         const code = `top.window.camera_snapshot(${number_exposure})`;
                         return [code, Blockly.JavaScript.ORDER_NONE];
-                    }
-                },
-                {
-                    type: 'wait_for_sensor_signal',
-                    message0: '等待传感器信号: %1',
-                    args0: [
-                        {
-                            type: 'field_dropdown',
-                            name: 'sensor',
-                            options: [['光电传感器', '光电传感器']]
-                        }
-                    ],
-                    previousStatement: null,
-                    nextStatement: null,
-                    colour: 230,
-                    tooltip: '等待指定的传感器信号。',
-                    helpUrl: 'http://www.baidu.com',
-                    javascript: () => {
-                        return 'top.window.wait_for_sensor_signal();\n';
                     }
                 },
                 {
@@ -149,7 +149,7 @@ export default {
                     }
                 },
                 {
-                    type: 'findcontour',
+                    type: 'findcontours',
                     message0: '提取边缘 图片: %1 %2 最小值: %3 %4 最大值: %5',
                     args0: [
                         {
@@ -189,41 +189,50 @@ export default {
                         const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
                         const min = block.getFieldValue('min');
                         const max = block.getFieldValue('max');
-                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        const code = `top.window.findcontours(${image}, ${min}, ${max})`;
                         return [code, Blockly.JavaScript.ORDER_NONE];
                     }
                 },
                 {
                     type: 'findcenter',
-                    message0: '中心点提取 边缘: %1',
+                    message0: '提取中心点 边缘: %1, 图片: %2',
                     args0: [
                         {
                             type: 'field_variable',
-                            name: 'image',
+                            name: 'contours',
                             variable: '边缘'
+                        },
+                        {
+                            type: 'field_variable',
+                            name: 'image',
+                            variable: '图片'
                         }
                     ],
                     inputsInline: false,
                     output: null,
                     colour: 120,
-                    tooltip: '中心点提取',
+                    tooltip: '提取中心点',
                     helpUrl: '',
                     javascript: block => {
+                        const contours = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('contours'), Blockly.Variables.NAME_TYPE);
                         const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
-                        const min = block.getFieldValue('min');
-                        const max = block.getFieldValue('max');
-                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        const code = `top.window.findcenter(${contours}, ${image})`;
                         return [code, Blockly.JavaScript.ORDER_NONE];
                     }
                 },
                 {
                     type: 'shapedetect',
-                    message0: '形状识别 边缘: %1',
+                    message0: '形状识别 边缘: %1, 图片: %2',
                     args0: [
                         {
                             type: 'field_variable',
-                            name: 'image',
+                            name: 'contours',
                             variable: '边缘'
+                        },
+                        {
+                            type: 'field_variable',
+                            name: 'image',
+                            variable: '图片'
                         }
                     ],
                     inputsInline: false,
@@ -232,10 +241,9 @@ export default {
                     tooltip: '形状识别',
                     helpUrl: '',
                     javascript: block => {
+                        const contours = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('contours'), Blockly.Variables.NAME_TYPE);
                         const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
-                        const min = block.getFieldValue('min');
-                        const max = block.getFieldValue('max');
-                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
+                        const code = `top.window.shapedetect(${contours}, ${image})`;
                         return [code, Blockly.JavaScript.ORDER_NONE];
                     }
                 },
@@ -258,16 +266,16 @@ export default {
                         }
                     ],
                     inputsInline: false,
-                    output: null,
+                    previousStatement: null,
+                    nextStatement: null,
                     colour: 120,
                     tooltip: '机器人抓取',
                     helpUrl: '',
                     javascript: block => {
-                        const image = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('image'), Blockly.Variables.NAME_TYPE);
-                        const min = block.getFieldValue('min');
-                        const max = block.getFieldValue('max');
-                        const code = `top.window.threshold(${image}, ${min}, ${max})`;
-                        return [code, Blockly.JavaScript.ORDER_NONE];
+                        const type = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('type'), Blockly.Variables.NAME_TYPE);
+                        const center = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('center'), Blockly.Variables.NAME_TYPE);
+                        const code = `top.window.grab(${type}, ${center})`;
+                        return code;
                     }
                 }
             ],
@@ -277,7 +285,7 @@ export default {
                     </block>
                     <block type="camera_snapshot" id="camera_snapshot"></block>
                     <block type="threshold" id="threshold"></block>
-                    <block type="findcontour" id="findcontour"></block>
+                    <block type="findcontours" id="findcontours"></block>
                     <block type="findcenter" id="findcenter"></block>
                     <block type="shapedetect" id="shapedetect"></block>
                     <block type="grab" id="grab"></block>
@@ -418,37 +426,102 @@ export default {
         };
     },
     mounted() {
+        top.window.wait_for_sensor_signal = function() {
+            alert('wait_for_sensor_signal');
+        };
+
         top.window.camera_snapshot = function(exposure) {
             console.debug(exposure);
             // eslint-disable-next-line no-undef
-            const mat = cv.Mat.ones(200, 200, cv.CV_8UC3);
-            // eslint-disable-next-line no-undef
-            cv.cvtColor(mat, mat, cv.COLOR_BGR2GRAY);
+            const mat = cv.imread('test_image');
             // eslint-disable-next-line no-undef
             cv.imshow('inspector_variable_image1', mat);
             return mat;
         };
 
-        top.window.wait_for_sensor_signal = function() {
-            alert('wait_for_sensor_signal');
-        };
-
-        top.window.showImage = function() {
-            // eslint-disable-next-line no-undef
-            const mat = cv.Mat.ones(200, 200, cv.CV_8UC3);
-            // eslint-disable-next-line no-undef
-            cv.cvtColor(mat, mat, cv.COLOR_BGR2GRAY);
-            // eslint-disable-next-line no-undef
-            cv.imshow('inspector_variable_image1', mat);
-        };
-
         top.window.threshold = function(image, min, max) {
             const dst = image.clone();
             // eslint-disable-next-line no-undef
-            cv.threshold(image, dst, min, max, cv.THRESH_BINARY);
+            cv.cvtColor(dst, dst, cv.COLOR_BGR2GRAY);
+            // eslint-disable-next-line no-undef
+            cv.threshold(dst, dst, min, max, cv.THRESH_BINARY);
             // eslint-disable-next-line no-undef
             cv.imshow('inspector_variable_image2', dst);
             return dst;
+        };
+
+        top.window.findcontours = function(image, min, max) {
+            const edges = image.clone();
+            // eslint-disable-next-line no-undef
+            cv.Canny(image, edges, min, max, 3);
+            // eslint-disable-next-line no-undef
+            let contours = new cv.MatVector();
+            // eslint-disable-next-line no-undef
+            let hierarchy = new cv.Mat();
+            // eslint-disable-next-line no-undef
+            cv.findContours(image, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+            // eslint-disable-next-line no-undef
+            const dst = image.clone();
+            // eslint-disable-next-line no-undef
+            cv.cvtColor(dst, dst, cv.COLOR_GRAY2BGR);
+            // eslint-disable-next-line no-undef
+            cv.drawContours(dst, contours, -1, [0, 255, 0, 255], 2);
+            // eslint-disable-next-line no-undef
+            cv.imshow('inspector_variable_image3', dst);
+            return contours;
+        };
+
+        top.window.findcenter = function(contours, image) {
+            const dst = image.clone();
+            // eslint-disable-next-line no-undef
+            const moments = cv.moments(contours.get(1));
+            // eslint-disable-next-line no-undef
+            const epsilon = 0.01 * cv.arcLength(contours.get(1), true);
+            // eslint-disable-next-line no-undef
+            const approx = new cv.Mat();
+            // eslint-disable-next-line no-undef
+            cv.approxPolyDP(contours.get(1), approx, epsilon, true);
+            // eslint-disable-next-line no-undef
+            const rect = cv.minAreaRect(approx);
+            const center = { x: moments.m10 / moments.m00, y: moments.m01 / moments.m00, angle: rect.angle.toFixed(1) };
+
+            let startPoint = { x: center.x - 10, y: center.y };
+            let endPoint = { x: center.x + 10, y: center.y };
+            // eslint-disable-next-line no-undef
+            cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
+            startPoint = { x: center.x, y: center.y - 10 };
+            endPoint = { x: center.x, y: center.y + 10 };
+            // eslint-disable-next-line no-undef
+            cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
+            // eslint-disable-next-line no-undef
+            cv.putText(dst, `x: ${center.x}, y: ${center.y}, angle: ${center.angle}`, startPoint, cv.FONT_HERSHEY_SIMPLEX, 0.5, [255, 0, 0, 255]);
+            // eslint-disable-next-line no-undef
+            cv.imshow('inspector_variable_image4', dst);
+            return center;
+        };
+
+        top.window.shapedetect = function(contours, image) {
+            const dst = image.clone();
+            // eslint-disable-next-line no-undef
+            const moments = cv.moments(contours.get(1));
+            // eslint-disable-next-line no-undef
+            const epsilon = 0.01 * cv.arcLength(contours.get(1), true);
+            // eslint-disable-next-line no-undef
+            const approx = new cv.Mat();
+            // eslint-disable-next-line no-undef
+            cv.approxPolyDP(contours.get(1), approx, epsilon, true);
+            // eslint-disable-next-line no-undef
+            const rect = cv.minAreaRect(approx);
+            const center = { x: moments.m10 / moments.m00, y: moments.m01 / moments.m00, angle: rect.angle.toFixed(1) };
+            // eslint-disable-next-line no-undef
+            cv.putText(dst, `sharp: ${approx.rows}`, center, cv.FONT_HERSHEY_SIMPLEX, 0.5, [0, 0, 255, 255]);
+            // eslint-disable-next-line no-undef
+            cv.imshow('inspector_variable_image5', dst);
+            return approx.rows;
+        };
+
+        top.window.grab = function(sharp, center) {
+            console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
         };
     },
     methods: {

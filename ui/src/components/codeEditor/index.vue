@@ -7,7 +7,6 @@
             <button @click="_generateXml()">dump</button>
             <button @click="_generateCode()">generate</button>
             <button @click="_runCode()">run</button>
-            <button @click="_test()">test</button>
         </a-row>
         <a-row type="flex" style="flex-grow: 1">
             <div id="editor" style="width: 100%; height: 100%" />
@@ -313,9 +312,6 @@ export default {
         _onImageInspectorClick(event) {
             this.imageInspectorData = event.target.toDataURL('image/png');
             this.imageInspectorVisiable = true;
-        },
-        _test() {
-            top.window.showImage();
         }
     }
 };
