@@ -12,31 +12,17 @@
             <div id="editor" style="width: 100%; height: 100%" />
         </a-row>
         <a-row type="flex" align="bottom" style="height: 20px">
-            <a-col :span="4" class="inspector_variable_name">{{ variables[0].name }}</a-col>
-            <a-col :span="4" class="inspector_variable_name">{{ variables[1].name }}</a-col>
-            <a-col :span="4" class="inspector_variable_name">{{ variables[2].name }}</a-col>
-            <a-col :span="4" class="inspector_variable_name">{{ variables[3].name }}</a-col>
-            <a-col :span="4" class="inspector_variable_name">{{ variables[4].name }}</a-col>
-            <a-col :span="4" class="inspector_variable_name">{{ variables[5].name }}</a-col>
+            <a-col v-for="item in variables" :key="item.id" :span="24 / variables.length" class="inspector_variable_name">{{ item.name }}</a-col>
         </a-row>
         <a-row type="flex" align="bottom" style="height: 120px">
-            <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[0].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
-            </a-col>
-            <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[1].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
-            </a-col>
-            <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[2].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
-            </a-col>
-            <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[3].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
-            </a-col>
-            <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[4].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
-            </a-col>
-            <a-col :span="4" class="inspector_variable_data">
-                <canvas :id="variables[5].id" class="inspector_variable_image" @click="_onImageInspectorClick" />
+            <a-col v-for="(item, index) in variables" :key="item.id" :span="24 / variables.length" class="inspector_variable_data">
+                <canvas
+                    v-if="item.id !== null"
+                    :id="variables[index].id"
+                    :data-name="item.name"
+                    class="inspector_variable_image"
+                    @click="_onImageInspectorClick"
+                />
             </a-col>
         </a-row>
         <a-modal v-model="imageInspectorVisiable" :title="imageInspectorTitle">
@@ -272,7 +258,7 @@ export default {
         },
         _runCode() {
             try {
-                eval(this._generateCode());
+                eval(`(async () => { ${this._generateCode()} })()`);
                 if (this.experimentMode && this.experiment !== null) {
                     if (this.experiment._step.expect && this.experiment._step.expect()) {
                         this._onExperimentStepComplete(this.experiment);
@@ -310,6 +296,7 @@ export default {
             this.onExperimentComplete && this.onExperimentComplete(experiment.experiment);
         },
         _onImageInspectorClick(event) {
+            this.imageInspectorTitle = event.target.getAttribute('data-name');
             this.imageInspectorData = event.target.toDataURL('image/png');
             this.imageInspectorVisiable = true;
         }

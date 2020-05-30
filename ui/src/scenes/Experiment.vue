@@ -77,7 +77,7 @@ export default {
                     tooltip: '等待指定的传感器信号',
                     helpUrl: '',
                     javascript: () => {
-                        return 'top.window.wait_for_sensor_signal();\n';
+                        return 'await top.window.wait_for_sensor_signal();\n';
                     }
                 },
                 {
@@ -274,7 +274,7 @@ export default {
                     javascript: block => {
                         const type = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('type'), Blockly.Variables.NAME_TYPE);
                         const center = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('center'), Blockly.Variables.NAME_TYPE);
-                        const code = `top.window.grab(${type}, ${center})`;
+                        const code = `top.window.grab(${type}, ${center});\n`;
                         return code;
                     }
                 }
@@ -409,7 +409,7 @@ export default {
                 { name: '边缘', id: 'inspector_variable_image3' },
                 { name: '中心点', id: 'inspector_variable_image4' },
                 { name: '工件类型', id: 'inspector_variable_image5' },
-                { name: '图片', id: 'inspector_variable_image6' }
+                { name: null, id: null }
             ],
             eventHandler: {
                 startExperiment: experiment => {
@@ -426,8 +426,8 @@ export default {
         };
     },
     mounted() {
-        top.window.wait_for_sensor_signal = function() {
-            alert('wait_for_sensor_signal');
+        top.window.wait_for_sensor_signal = async function() {
+            await (() => new Promise(resolve => setTimeout(resolve, 1000)))();
         };
 
         top.window.camera_snapshot = function(exposure) {
