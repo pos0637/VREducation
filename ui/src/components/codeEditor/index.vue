@@ -3,7 +3,6 @@
         <a-row type="flex">
             代码编辑器
             <a-button type="primary" icon="right-square" style="margin-left: 16px" v-bind:disabled="buttons.run_button" @click="_runCode()">运行</a-button>
-            <button @click="startTour(0)">start</button>
             <button @click="_generateXml()">dump</button>
             <button @click="_generateCode()">generate</button>
             <button @click="_runCode()">run</button>
@@ -12,13 +11,15 @@
             <div id="editor" style="width: 100%; height: 100%" />
         </a-row>
         <a-row type="flex" align="bottom" style="height: 20px">
-            <a-col v-for="item in variables" :key="item.id" :span="24 / variables.length" class="inspector_variable_name">{{ item.name }}</a-col>
+            <a-col v-for="item in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_name">{{
+                item.name
+            }}</a-col>
         </a-row>
         <a-row type="flex" align="bottom" style="height: 120px">
-            <a-col v-for="(item, index) in variables" :key="item.id" :span="24 / variables.length" class="inspector_variable_data">
+            <a-col v-for="(item, index) in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_data">
                 <canvas
                     v-if="item.id !== null"
-                    :id="variables[index].id"
+                    :id="inspectorVariables[index].id"
                     :data-name="item.name"
                     class="inspector_variable_image"
                     @click="_onImageInspectorClick"
@@ -69,16 +70,15 @@ export default {
         toolbox: Element,
         tours: Array,
         experiments: Array,
-        variables: Array,
-        eventHandler: Object,
-        onTourComplete: Function,
-        onExperimentComplete: Function
+        inspectorVariables: Array,
+        eventHandler: Object
     },
     data: function() {
         return {
             workspace: null,
             experimentMode: false,
             experiment: null,
+            variables: {},
             imageInspectorVisiable: false,
             imageInspectorTitle: null,
             imageInspectorData: null,
@@ -171,6 +171,7 @@ export default {
             }
 
             const step = this.experiments[experimentId].steps[stepId];
+            step.initialize && step.initialize();
             this._disableAllBlocks();
             this._enableBlocks(step.blocks);
             this._disableAllButtons();
@@ -178,12 +179,20 @@ export default {
             step.workspace && this._loadXml(step.workspace);
             this.experimentMode = true;
             this.experiment = { experiment: experimentId, step: stepId, _step: step };
-            this.eventHandler && this.eventHandler['startExperiment'] && this.eventHandler['startExperiment'](this.experiment);
+            this.eventHandler && this.eventHandler['onStartExperimentStep'] && this.eventHandler['onStartExperimentStep'](this.experiment);
 
             return true;
         },
-        nextExperiment() {
+        nextExperimentStep() {
             return this.startExperiment(this.experiment.experiment, this.experiment.step + 1);
+        },
+        getVariable(id) {
+            return this.variables[id];
+        },
+        setVariable(id, value) {
+            this.variables[id] = value;
+            // eslint-disable-next-line no-undef
+            cv.imshow(id, value);
         },
         _enableBlocks(blocks) {
             if (typeof blocks === 'undefined' || blocks === null) {
@@ -256,16 +265,24 @@ export default {
             console.debug(code);
             return code;
         },
-        _runCode() {
+        async _runCode() {
             try {
-                eval(`(async () => { ${this._generateCode()} })()`);
+                this.buttons.run_button = true;
+                this.$message.success(`开始运行`, 2);
+
+                await eval(`(async () => { ${this._generateCode()} })()`);
                 if (this.experimentMode && this.experiment !== null) {
-                    if (this.experiment._step.expect && this.experiment._step.expect()) {
+                    if (this.experiment._step.expect && (await this.experiment._step.expect())) {
                         this._onExperimentStepComplete(this.experiment);
                     }
                 }
+
+                this.$message.success(`运行结束`, 2);
             } catch (e) {
                 console.debug(e);
+                this.$message.fail(`运行失败: ${e}`, 2);
+            } finally {
+                this.buttons.run_button = false;
             }
         },
         _eventHandler(event) {
@@ -280,20 +297,19 @@ export default {
         },
         _onTourComplete(id) {
             console.debug(`tour complete: ${id}`);
-            this.onTourComplete && this.onTourComplete(id);
+            this.eventHandler && this.eventHandler['onTourComplete'] && this.eventHandler['onTourComplete'](id);
         },
         _onExperimentStepComplete(experiment) {
             console.debug(`experiment step complete: ${experiment.experiment}, ${experiment.step}`);
-            this.eventHandler && this.eventHandler['experimentStepComplete'] && this.eventHandler['experimentStepComplete'](experiment);
-            if (!this.nextExperiment()) {
-                this.eventHandler && this.eventHandler['experimentComplete'] && this.eventHandler['experimentComplete'](experiment);
+            this.eventHandler && this.eventHandler['onExperimentStepComplete'] && this.eventHandler['onExperimentStepComplete'](experiment);
+            if (!this.nextExperimentStep()) {
                 this._onExperimentComplete(experiment);
+                this.eventHandler && this.eventHandler['onExperimentComplete'] && this.eventHandler['onExperimentComplete'](experiment);
             }
         },
         _onExperimentComplete(experiment) {
             console.debug(`experiment complete: ${experiment.experiment}`);
             this.experimentMode = false;
-            this.onExperimentComplete && this.onExperimentComplete(experiment.experiment);
         },
         _onImageInspectorClick(event) {
             this.imageInspectorTitle = event.target.getAttribute('data-name');

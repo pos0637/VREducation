@@ -2,12 +2,18 @@
     <div id="content">
         <a-layout style="width: 100%; height: 100%">
             <a-row>
-                <a-col :span="16" style="text-align: left">
-                    <span>当前实验 {{ currentExperiment }} 步骤: {{ currentStep }}</span>
+                <a-col :span="12" style="text-align: left">
+                    <span v-if="currentExperiment !== null && currentStep !== null"
+                        >当前实验 {{ experiments[currentExperiment].name }} 步骤: {{ experiments[currentExperiment].steps[currentStep].intro }}
+                    </span>
                 </a-col>
-                <a-col :span="8" style="text-align: right">
-                    <a-button type="primary" icon="question" style="margin-left: 16px">帮助</a-button>
-                    <a-button type="primary" icon="forward" style="margin-left: 16px">下一步骤实验</a-button>
+                <a-col :span="12" style="text-align: right">
+                    <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
+                        {{ currentExperiment === null ? '开始实验' : experimentsFinish ? '实验完成' : '下一实验步骤' }}
+                    </a-button>
+                    <a-button type="primary" icon="question" style="margin-left: 8px" @click="_restart">重新学习</a-button>
+                    <a-button type="primary" icon="question" style="margin-left: 8px">帮助</a-button>
+                    <a-button type="primary" icon="forward" style="margin-left: 8px">下一单元</a-button>
                 </a-col>
             </a-row>
             <a-row style="height: 100%">
@@ -18,10 +24,8 @@
                         :toolbox="toolbox"
                         :tours="tours"
                         :experiments="experiments"
-                        :variables="variables"
+                        :inspectorVariables="inspectorVariables"
                         :eventHandler="eventHandler"
-                        :onTourComplete="_onTourComplete"
-                        :onExperimentComplete="_onExperimentComplete"
                     />
                 </a-col>
                 <a-col :span="8" class="vr">VR</a-col>
@@ -51,6 +55,7 @@
 
 <script>
 import Blockly from 'blockly';
+import { sleep } from '@/miscs/coroutine';
 import CodeEditor from '@/components/codeEditor';
 
 export default {
@@ -377,7 +382,14 @@ export default {
                             intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
                             buttons: ['run_button'],
                             workspace: null,
-                            expect: () => true
+                            expect: async () => {
+                                while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image1') === 'undefined') {
+                                    console.debug(typeof this.$refs.codeEditor.getVariable('inspector_variable_image1'));
+                                    await sleep(1000);
+                                }
+
+                                return true;
+                            }
                         }
                     ]
                 },
@@ -398,12 +410,12 @@ export default {
                             intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
                             buttons: ['run_button'],
                             workspace: null,
-                            expect: () => true
+                            expect: async () => true
                         }
                     ]
                 }
             ],
-            variables: [
+            inspectorVariables: [
                 { name: '图片', id: 'inspector_variable_image1' },
                 { name: '预处理图片', id: 'inspector_variable_image2' },
                 { name: '边缘', id: 'inspector_variable_image3' },
@@ -412,45 +424,63 @@ export default {
                 { name: null, id: null }
             ],
             eventHandler: {
-                startExperiment: experiment => {
-                    this.currentExperiment = this.experiments[experiment.experiment].name;
-                    this.currentStep = this.experiments[experiment.experiment].steps[experiment.step].intro;
-                    this.$message.success(`${experiment.step > 0 ? '操作成功, 下一步' : ''}${this.currentStep}`, 2);
+                onTourComplete: id => {
+                    if (id === 0) {
+                        this.$refs.codeEditor.startExperiment(0);
+                    } else if (id === 1) {
+                        this.$refs.codeEditor.startExperiment(1);
+                    }
                 },
-                experimentComplete: () => {
-                    this.currentStep = null;
+                onStartExperimentStep: experiment => {
+                    this.currentExperiment = experiment.experiment;
+                    this.currentStep = experiment.step;
+                    this.$message.success(
+                        `${experiment.step > 0 ? '操作成功, 下一步' : ''}${this.experiments[this.currentExperiment].steps[this.currentStep].intro}`,
+                        2
+                    );
+                },
+                onExperimentComplete: experiment => {
+                    if (experiment.experiment === this.experiments.length - 1) {
+                        this.experimentsFinish = true;
+                        this.$message.success('本单元实验完成,请进入下一单元学习');
+                    } else {
+                        this.startExperiment = true;
+                    }
                 }
             },
             currentExperiment: null,
-            currentStep: null
+            currentStep: null,
+            startExperiment: true,
+            experimentsFinish: false,
+            runFlag: false
         };
     },
     mounted() {
-        top.window.wait_for_sensor_signal = async function() {
-            await (() => new Promise(resolve => setTimeout(resolve, 1000)))();
+        this.runFlag = true;
+
+        top.window.wait_for_sensor_signal = async () => {
+            await sleep(3000);
         };
 
-        top.window.camera_snapshot = function(exposure) {
+        top.window.camera_snapshot = exposure => {
             console.debug(exposure);
             // eslint-disable-next-line no-undef
             const mat = cv.imread('test_image');
-            // eslint-disable-next-line no-undef
-            cv.imshow('inspector_variable_image1', mat);
+            this.$refs.codeEditor.setVariable('inspector_variable_image1', mat);
             return mat;
         };
 
-        top.window.threshold = function(image, min, max) {
+        top.window.threshold = (image, min, max) => {
             const dst = image.clone();
             // eslint-disable-next-line no-undef
             cv.cvtColor(dst, dst, cv.COLOR_BGR2GRAY);
             // eslint-disable-next-line no-undef
             cv.threshold(dst, dst, min, max, cv.THRESH_BINARY);
-            // eslint-disable-next-line no-undef
-            cv.imshow('inspector_variable_image2', dst);
+            this.$refs.codeEditor.setVariable('inspector_variable_image2', dst);
             return dst;
         };
 
-        top.window.findcontours = function(image, min, max) {
+        top.window.findcontours = (image, min, max) => {
             const edges = image.clone();
             // eslint-disable-next-line no-undef
             cv.Canny(image, edges, min, max, 3);
@@ -466,12 +496,11 @@ export default {
             cv.cvtColor(dst, dst, cv.COLOR_GRAY2BGR);
             // eslint-disable-next-line no-undef
             cv.drawContours(dst, contours, -1, [0, 255, 0, 255], 2);
-            // eslint-disable-next-line no-undef
-            cv.imshow('inspector_variable_image3', dst);
+            this.$refs.codeEditor.setVariable('inspector_variable_image3', dst);
             return contours;
         };
 
-        top.window.findcenter = function(contours, image) {
+        top.window.findcenter = (contours, image) => {
             const dst = image.clone();
             // eslint-disable-next-line no-undef
             const moments = cv.moments(contours.get(1));
@@ -495,12 +524,11 @@ export default {
             cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
             // eslint-disable-next-line no-undef
             cv.putText(dst, `x: ${center.x}, y: ${center.y}, angle: ${center.angle}`, startPoint, cv.FONT_HERSHEY_SIMPLEX, 0.5, [255, 0, 0, 255]);
-            // eslint-disable-next-line no-undef
-            cv.imshow('inspector_variable_image4', dst);
+            this.$refs.codeEditor.setVariable('inspector_variable_image4', dst);
             return center;
         };
 
-        top.window.shapedetect = function(contours, image) {
+        top.window.shapedetect = (contours, image) => {
             const dst = image.clone();
             // eslint-disable-next-line no-undef
             const moments = cv.moments(contours.get(1));
@@ -515,29 +543,33 @@ export default {
             const center = { x: moments.m10 / moments.m00, y: moments.m01 / moments.m00, angle: rect.angle.toFixed(1) };
             // eslint-disable-next-line no-undef
             cv.putText(dst, `sharp: ${approx.rows}`, center, cv.FONT_HERSHEY_SIMPLEX, 0.5, [0, 0, 255, 255]);
-            // eslint-disable-next-line no-undef
-            cv.imshow('inspector_variable_image5', dst);
+            this.$refs.codeEditor.setVariable('inspector_variable_image5', dst);
             return approx.rows;
         };
 
-        top.window.grab = function(sharp, center) {
+        top.window.grab = (sharp, center) => {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
         };
     },
+    beforeDestroy() {
+        this.runFlag = false;
+    },
     methods: {
-        _onTourComplete(id) {
-            if (id === 0) {
-                this.$refs.codeEditor.startExperiment(0);
-            } else if (id === 1) {
-                this.$refs.codeEditor.startExperiment(1);
+        _start() {
+            if (this.currentExperiment === null) {
+                this.startExperiment = false;
+                this.$refs.codeEditor.startTour(0);
+            } else if (this.currentExperiment < this.experiments.length) {
+                this.startExperiment = false;
+                this.$refs.codeEditor.startTour(this.currentExperiment + 1);
             }
         },
-        _onExperimentComplete(id) {
-            if (id === 0) {
-                this.$refs.codeEditor.startTour(1);
-            } else if (id === 1) {
-                alert('实验完成,请进入实验考核单元');
-            }
+        _restart() {
+            this.currentExperiment = null;
+            this.currentStep = null;
+            this.startExperiment = true;
+            this.experimentsFinish = false;
+            this._start();
         }
     }
 };
