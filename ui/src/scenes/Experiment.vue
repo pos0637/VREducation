@@ -3,8 +3,9 @@
         <a-layout style="width: 100%; height: 100%">
             <a-row>
                 <a-col :span="12" style="text-align: left">
+                    <span>提示信息: </span>
                     <span v-if="currentExperiment !== null && currentStep !== null"
-                        >当前实验 {{ experiments[currentExperiment].name }} 步骤: {{ experiments[currentExperiment].steps[currentStep].intro }}
+                        >当前实验 {{ experiments[currentExperiment].name }}; 步骤: {{ experiments[currentExperiment].steps[currentStep].intro }}
                     </span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
@@ -12,7 +13,6 @@
                         {{ currentExperiment === null ? '开始实验' : experimentsFinish ? '实验完成' : '下一实验步骤' }}
                     </a-button>
                     <a-button type="primary" icon="question" style="margin-left: 8px" @click="_restart">重新学习</a-button>
-                    <a-button type="primary" icon="question" style="margin-left: 8px">帮助</a-button>
                     <a-button type="primary" icon="forward" style="margin-left: 8px">下一单元</a-button>
                 </a-col>
             </a-row>
@@ -34,7 +34,7 @@
     </div>
 </template>
 
-<style>
+<style scoped>
 #content {
     width: 100%;
     height: 100%;
@@ -347,6 +347,66 @@ export default {
                         elementId: '[data-id="run_button"]',
                         intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
                     }
+                ],
+                [
+                    {
+                        intro: '<div style="width: 300px; height: 300px">第三步: 图像预处理实验</div>'
+                    },
+                    {
+                        elementId: '[data-id="variable_preprocess_image_set"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 设置预处理图片 功能块进入编程界面, 并与 设置图片 功能块连接</div>'
+                    },
+                    {
+                        elementId: '[data-id="threshold"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 二值化 功能块进入编程界面, 并与 设置预处理图片 功能块连接</div>'
+                    },
+                    {
+                        elementId: '[data-id="run_button"]',
+                        intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
+                    }
+                ],
+                [
+                    {
+                        intro: '<div style="width: 300px; height: 300px">第四步: 二值化调整阈值实验</div>'
+                    },
+                    {
+                        elementId: '[data-id="threshold"]',
+                        intro: '<div style="width: 300px; height: 300px">设置 二值化 功能块最小值为50, 最大值为100</div>'
+                    },
+                    {
+                        elementId: '[data-id="run_button"]',
+                        intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
+                    }
+                ],
+                [
+                    {
+                        intro: '<div style="width: 300px; height: 300px">第五步: 提取边缘实验</div>'
+                    },
+                    {
+                        elementId: '[data-id="variable_contour_set"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 设置边缘 功能块进入编程界面, 并与 设置预处理图片 功能块连接</div>'
+                    },
+                    {
+                        elementId: '[data-id="findcontours"]',
+                        intro: '<div style="width: 300px; height: 300px">拖拽 提取边缘 功能块进入编程界面, 并与 设置边缘 功能块连接</div>'
+                    },
+                    {
+                        elementId: '[data-id="run_button"]',
+                        intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
+                    }
+                ],
+                [
+                    {
+                        intro: '<div style="width: 300px; height: 300px">第六步: 提取边缘调整阈值实验</div>'
+                    },
+                    {
+                        elementId: '[data-id="findcontours"]',
+                        intro: '<div style="width: 300px; height: 300px">设置 提取边缘 功能块最小值为10, 最大值为30</div>'
+                    },
+                    {
+                        elementId: '[data-id="run_button"]',
+                        intro: '<div style="width: 300px; height: 300px">点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果</div>'
+                    }
                 ]
             ],
             experiments: [
@@ -384,7 +444,6 @@ export default {
                             workspace: null,
                             expect: async () => {
                                 while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image1') === 'undefined') {
-                                    console.debug(typeof this.$refs.codeEditor.getVariable('inspector_variable_image1'));
                                     await sleep(1000);
                                 }
 
@@ -410,7 +469,137 @@ export default {
                             intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
                             buttons: ['run_button'],
                             workspace: null,
-                            expect: async () => true
+                            expect: async () => {
+                                while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image1') === 'undefined') {
+                                    await sleep(1000);
+                                }
+
+                                return true;
+                            }
+                        }
+                    ]
+                },
+                {
+                    name: '图像预处理实验',
+                    steps: [
+                        {
+                            name: 'step1',
+                            intro: '拖拽 设置预处理图片 功能块进入编程界面, 并与 设置图片 功能块连接',
+                            blocks: ['variable_preprocess_image_set'],
+                            workspace:
+                                '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">2000</field></block></value></block></next></block></xml>',
+                            expect:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field></block></next></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step2',
+                            intro: '拖拽 二值化 功能块进入编程界面, 并与 设置预处理图片 功能块连接',
+                            blocks: ['threshold'],
+                            workspace: null,
+                            expect:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step3',
+                            intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                            buttons: ['run_button'],
+                            workspace: null,
+                            expect: async () => {
+                                while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image2') === 'undefined') {
+                                    await sleep(1000);
+                                }
+
+                                return true;
+                            }
+                        }
+                    ]
+                },
+                {
+                    name: '二值化调整阈值实验',
+                    steps: [
+                        {
+                            name: 'step1',
+                            intro: '设置 二值化 功能块最小值为50, 最大值为100',
+                            blocks: [],
+                            workspace:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></xml>',
+                            expect:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value></block></next></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step2',
+                            intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                            buttons: ['run_button'],
+                            workspace: null,
+                            expect: async () => {
+                                while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image2') === 'undefined') {
+                                    await sleep(1000);
+                                }
+
+                                return true;
+                            }
+                        }
+                    ]
+                },
+                {
+                    name: '提取边缘实验',
+                    steps: [
+                        {
+                            name: 'step1',
+                            intro: '拖拽 设置边缘 功能块进入编程界面, 并与 设置预处理图片 功能块连接',
+                            blocks: ['variable_preprocess_image_set'],
+                            workspace:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value></block></next></block></next></block></xml>',
+                            expect:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="BDva|J6TFEEuB-yx[QIE"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field></block></next></block></next></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step2',
+                            intro: '拖拽 提取边缘 功能块进入编程界面, 并与 设置边缘 功能块连接',
+                            blocks: ['findcontours'],
+                            workspace: null,
+                            expect:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="W=e@LQs+LCSywF}N(!#_"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="findcontours" id="^CE?$F~gw5Z7S8aD,K:w"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step3',
+                            intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                            buttons: ['run_button'],
+                            workspace: null,
+                            expect: async () => {
+                                while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image3') === 'undefined') {
+                                    await sleep(1000);
+                                }
+
+                                return true;
+                            }
+                        }
+                    ]
+                },
+                {
+                    name: '提取边缘调整阈值实验',
+                    steps: [
+                        {
+                            name: 'step1',
+                            intro: '设置 提取边缘 功能块最小值为10, 最大值为30',
+                            blocks: [],
+                            workspace:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="W=e@LQs+LCSywF}N(!#_"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="findcontours" id="^CE?$F~gw5Z7S8aD,K:w"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></next></block></xml>',
+                            expect:
+                                '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="W=e@LQs+LCSywF}N(!#_"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="findcontours" id="^CE?$F~gw5Z7S8aD,K:w"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value></block></next></block></next></block></next></block></xml>'
+                        },
+                        {
+                            name: 'step2',
+                            intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                            buttons: ['run_button'],
+                            workspace: null,
+                            expect: async () => {
+                                while (this.runFlag && typeof this.$refs.codeEditor.getVariable('inspector_variable_image3') === 'undefined') {
+                                    await sleep(1000);
+                                }
+
+                                return true;
+                            }
                         }
                     ]
                 }
@@ -425,11 +614,7 @@ export default {
             ],
             eventHandler: {
                 onTourComplete: id => {
-                    if (id === 0) {
-                        this.$refs.codeEditor.startExperiment(0);
-                    } else if (id === 1) {
-                        this.$refs.codeEditor.startExperiment(1);
-                    }
+                    this.$refs.codeEditor.startExperiment(id);
                 },
                 onStartExperimentStep: experiment => {
                     this.currentExperiment = experiment.experiment;
@@ -459,7 +644,7 @@ export default {
         this.runFlag = true;
 
         top.window.wait_for_sensor_signal = async () => {
-            await sleep(3000);
+            await sleep(1000);
         };
 
         top.window.camera_snapshot = exposure => {

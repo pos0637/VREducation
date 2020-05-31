@@ -246,6 +246,10 @@ export default {
             return xml;
         },
         _compareXml(xml) {
+            if (typeof xml !== 'string' || xml === null) {
+                return false;
+            }
+
             const reg = xml
                 .replace(/\//g, '\\/')
                 .replace(/id="([^"]*)"/g, 'id="([^\\"]*)"')
@@ -268,6 +272,7 @@ export default {
         async _runCode() {
             try {
                 this.buttons.run_button = true;
+                this.variables = {};
                 this.$message.success(`开始运行`, 2);
 
                 await eval(`(async () => { ${this._generateCode()} })()`);
