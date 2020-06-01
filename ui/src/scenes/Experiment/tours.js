@@ -1,5 +1,14 @@
 export const tours = [
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
+                <field name="sensor">光电传感器</field>
+            </block>
+            <block type="camera_snapshot" id="camera_snapshot"></block>
+            <block type="variables_set" id="variable_image_set">
+                <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">视觉抓取实验介绍</div>'
@@ -26,6 +35,15 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
+                <field name="sensor">光电传感器</field>
+            </block>
+            <block type="camera_snapshot" id="camera_snapshot"></block>
+            <block type="variables_set" id="variable_image_set">
+                <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第二步: 工业相机曝光度实验</div>'
@@ -41,6 +59,12 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="threshold" id="threshold"></block>
+            <block type="variables_set" id="variable_preprocess_image_set">
+                <field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">预处理图片</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第三步: 图像预处理实验</div>'
@@ -60,6 +84,12 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="threshold" id="threshold"></block>
+            <block type="variables_set" id="variable_preprocess_image_set">
+                <field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">预处理图片</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第四步: 二值化调整阈值实验</div>'
@@ -75,6 +105,12 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="findcontours" id="findcontours"></block>
+            <block type="variables_set" id="variable_contour_set">
+                <field name="VAR" id="]i17utjfOMJY=.sIUx1m">边缘</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第五步: 提取边缘实验</div>'
@@ -94,6 +130,12 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="findcontours" id="findcontours"></block>
+            <block type="variables_set" id="variable_contour_set">
+                <field name="VAR" id="]i17utjfOMJY=.sIUx1m">边缘</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第六步: 提取边缘调整阈值实验</div>'
@@ -109,6 +151,12 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="findcenter" id="findcenter"></block>
+            <block type="variables_set" id="variable_center_set">
+                <field name="VAR" id="82jjstjfOMJY=.s1123c">中心点</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第七步: 提取中心点实验</div>'
@@ -128,6 +176,12 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+                <block type="shapedetect" id="shapedetect"></block>
+                <block type="variables_set" id="variable_sharp_set">
+                <field name="VAR" id="bgehjfOMJY=.s11o5al1">工件类型</field>
+            </block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第八步: 形状识别实验</div>'
@@ -147,6 +201,9 @@ export const tours = [
         ]
     },
     {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="grab" id="grab"></block>
+        </xml>`,
         steps: [
             {
                 intro: '<div style="width: 300px; height: 300px">第九步: 机器人抓取实验</div>'

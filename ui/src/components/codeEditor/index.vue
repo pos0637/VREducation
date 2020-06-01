@@ -19,6 +19,7 @@
             <a-col v-for="(item, index) in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_data">
                 <canvas
                     v-if="item.id !== null"
+                    :ref="inspectorVariables[index].id"
                     :id="inspectorVariables[index].id"
                     :data-name="item.name"
                     class="inspector_variable_image"
@@ -164,18 +165,18 @@ export default {
             };
         },
         startTour(id) {
-            for (const step of this.tours[id].steps) {
-                if (typeof step.elementId !== 'undefined') {
-                    step.element = document.querySelectorAll(step.elementId)[0];
-                }
-            }
-
             const tour = this.tours[id];
             typeof tour.initialize !== 'undefined' && tour.initialize();
             typeof tour.workspace !== 'undefined' && this._loadXml(tour.workspace);
             if (typeof tour.toolbox !== 'undefined') {
                 this.toolboxData = Blockly.Xml.textToDom(tour.toolbox);
                 this.workspace.updateToolbox(this.toolboxData);
+            }
+
+            for (const step of this.tours[id].steps) {
+                if (typeof step.elementId !== 'undefined') {
+                    step.element = document.querySelectorAll(step.elementId)[0];
+                }
             }
 
             const options = {
@@ -279,6 +280,15 @@ export default {
                 this.buttons[button] = true;
             }
         },
+        _clearVariables() {
+            this.variables = {};
+            for (const variable of this.inspectorVariables) {
+                if (variable.id !== null) {
+                    const canvas = this.$refs[variable.id][0];
+                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+        },
         _generateXml() {
             const xml = Blockly.Xml.workspaceToDom(this.workspace);
             console.debug(xml);
@@ -311,7 +321,7 @@ export default {
         async _runCode() {
             try {
                 this.buttons.run_button = true;
-                this.variables = {};
+                this._clearVariables();
                 this.$message.success(`开始运行`, 2);
 
                 await eval(`(async () => { ${this._generateCode()} })()`);
