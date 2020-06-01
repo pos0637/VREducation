@@ -62,6 +62,7 @@ import Blockly from 'blockly';
 import 'blockly/blocks';
 import 'blockly/javascript';
 import * as Zh from 'blockly/msg/zh-hans';
+import { sleep } from '@/miscs/coroutine';
 
 export default {
     name: 'CodeEditor',
@@ -138,6 +139,20 @@ export default {
             setTimeout(() => {
                 Blockly.svgResize(this.workspace);
             }, 1);
+
+            // 高亮显示执行代码块与调试模式下减速执行
+            Blockly.JavaScript.STATEMENT_PREFIX = 'top.window.highlightBlock(%1);\n';
+            Blockly.JavaScript.STATEMENT_SUFFIX = 'await top.window.delay();\n';
+            Blockly.JavaScript.addReservedWords('top.window.highlightBlock');
+            Blockly.JavaScript.addReservedWords('top.window.delay');
+            top.window.highlightBlock = id => {
+                this.workspace.highlightBlock(id);
+            };
+            top.window.delay = async () => {
+                if (this.experimentMode) {
+                    await sleep(500);
+                }
+            };
         },
         startTour(id) {
             for (const step of this.tours[id]) {
