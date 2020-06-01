@@ -54,7 +54,6 @@
 </style>
 
 <script>
-import Blockly from 'blockly';
 import { sleep } from '@/miscs/coroutine';
 import CodeEditor from '@/components/codeEditor';
 import { blocks } from './blocks';
@@ -70,7 +69,7 @@ export default {
     data: function() {
         return {
             blocks: blocks,
-            toolbox: Blockly.Xml.textToDom(toolbox),
+            toolbox: toolbox,
             tours: tours,
             experiments: buildExperiments(this),
             inspectorVariables: [

@@ -35,6 +35,13 @@
     </a-layout>
 </template>
 
+<style>
+.introjs-tooltip {
+    min-width: 500px !important;
+    min-height: 400px !important;
+}
+</style>
+
 <style scoped>
 .inspector_variable_name {
     text-align: middle;
@@ -68,7 +75,7 @@ export default {
     name: 'CodeEditor',
     props: {
         blocks: Array,
-        toolbox: Element,
+        toolbox: String,
         tours: Array,
         experiments: Array,
         inspectorVariables: Array,
@@ -77,6 +84,7 @@ export default {
     data: function() {
         return {
             workspace: null,
+            toolboxData: null,
             experimentMode: false,
             experiment: null,
             variables: {},
@@ -102,8 +110,9 @@ export default {
                 }
             }
 
+            this.toolboxData = Blockly.Xml.textToDom(this.toolbox);
             const options = {
-                toolbox: this.toolbox,
+                toolbox: this.toolboxData,
                 collapse: false,
                 comments: true,
                 disable: false,
@@ -155,10 +164,18 @@ export default {
             };
         },
         startTour(id) {
-            for (const step of this.tours[id]) {
+            for (const step of this.tours[id].steps) {
                 if (typeof step.elementId !== 'undefined') {
                     step.element = document.querySelectorAll(step.elementId)[0];
                 }
+            }
+
+            const tour = this.tours[id];
+            typeof tour.initialize !== 'undefined' && tour.initialize();
+            typeof tour.workspace !== 'undefined' && this._loadXml(tour.workspace);
+            if (typeof tour.toolbox !== 'undefined') {
+                this.toolboxData = Blockly.Xml.textToDom(tour.toolbox);
+                this.workspace.updateToolbox(this.toolboxData);
             }
 
             const options = {
@@ -167,12 +184,13 @@ export default {
                 skipLabel: '<span style="font-size: 1.0rem">跳过</span>',
                 doneLabel: '<span style="font-size: 1.0rem; color: blue">开始实验</span>',
                 tooltipPosition: 'auto',
+                tooltipClass: 'introjs-tooltip',
                 exitOnEsc: false,
                 exitOnOverlayClick: false
             };
 
             this.$intro()
-                .setOptions(Object.assign(options, { steps: this.tours[id] }))
+                .setOptions(Object.assign(options, { steps: this.tours[id].steps }))
                 .onexit(() => this._onTourComplete(id))
                 .start();
         },
@@ -186,12 +204,18 @@ export default {
             }
 
             const step = this.experiments[experimentId].steps[stepId];
-            step.initialize && step.initialize();
+            typeof step.initialize !== 'undefined' && step.initialize();
+            typeof step.workspace !== 'undefined' && this._loadXml(step.workspace);
+            if (typeof step.toolbox !== 'undefined') {
+                this.toolboxData = Blockly.Xml.textToDom(step.toolbox);
+                this.workspace.updateToolbox(this.toolboxData);
+            }
+
             this._disableAllBlocks();
             this._enableBlocks(step.blocks);
             this._disableAllButtons();
             this._enableButtons(step.buttons);
-            step.workspace && this._loadXml(step.workspace);
+
             this.experimentMode = true;
             this.experiment = { experiment: experimentId, step: stepId, _step: step };
             this.eventHandler && this.eventHandler['onStartExperimentStep'] && this.eventHandler['onStartExperimentStep'](this.experiment);
@@ -214,32 +238,32 @@ export default {
                 return;
             }
 
-            for (let i = 0; i < this.toolbox.children.length; i++) {
-                if (blocks.indexOf(this.toolbox.children[i].getAttribute('id')) >= 0) {
-                    this.toolbox.children[i].setAttribute('disabled', false);
+            for (let i = 0; i < this.toolboxData.children.length; i++) {
+                if (blocks.indexOf(this.toolboxData.children[i].getAttribute('id')) >= 0) {
+                    this.toolboxData.children[i].setAttribute('disabled', false);
                     continue;
                 }
 
-                const category = this.toolbox.children[i];
+                const category = this.toolboxData.children[i];
                 for (let j = 0; j < category.children.length; j++) {
                     if (blocks.indexOf(category.children[j].getAttribute('id')) >= 0) {
                         category.children[j].setAttribute('disabled', false);
                     }
                 }
             }
-            this.workspace.updateToolbox(this.toolbox);
-            console.debug(this.toolbox);
+            this.workspace.updateToolbox(this.toolboxData);
+            console.debug(this.toolboxData);
         },
         _disableAllBlocks() {
-            for (let i = 0; i < this.toolbox.children.length; i++) {
-                this.toolbox.children[i].setAttribute('disabled', true);
-                const category = this.toolbox.children[i];
+            for (let i = 0; i < this.toolboxData.children.length; i++) {
+                this.toolboxData.children[i].setAttribute('disabled', true);
+                const category = this.toolboxData.children[i];
                 for (let j = 0; j < category.children.length; j++) {
                     category.children[j].setAttribute('disabled', true);
                 }
             }
-            this.workspace.updateToolbox(this.toolbox);
-            console.debug(this.toolbox);
+            this.workspace.updateToolbox(this.toolboxData);
+            console.debug(this.toolboxData);
         },
         _enableButtons(buttons) {
             if (typeof buttons === 'undefined' || buttons === null) {
