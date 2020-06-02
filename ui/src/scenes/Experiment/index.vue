@@ -25,8 +25,9 @@
                         :eventHandler="eventHandler"
                     />
                 </a-col>
-                <a-col :span="8" id="experiment_frame_container" class="vr">
+                <a-col :span="8" ref="experiment_frame_container" class="vr">
                     <iframe id="experiment_frame" frameborder="0" scrolling="auto" src="unity/index.html"></iframe>
+                    <resize-observer @notify="_onResize" />
                 </a-col>
             </a-row>
         </a-layout>
@@ -102,6 +103,9 @@ export default {
                     } else {
                         this.startExperiment = true;
                     }
+                },
+                onRunCode: () => {
+                    this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
                 }
             },
             currentExperiment: null,
@@ -109,7 +113,8 @@ export default {
             startExperiment: true,
             experimentsFinish: false,
             loading: true,
-            runFlag: false
+            runFlag: false,
+            gameInstance: null
         };
     },
     mounted() {
@@ -206,12 +211,18 @@ export default {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
         };
 
-        const container = document.getElementById('experiment_frame_container');
-        const frame = document.getElementById('experiment_frame');
-        frame.style.width = container.clientWidth + 'px';
-        frame.style.height = container.clientHeight + 'px';
-        // this.runFlag = true;
-        // this._start();
+        top.window.onUnityProgress = (sender, progress) => {
+            progress === 1 && sender.SendMessage('UintyConnectJS', 'SetScene', 3);
+        };
+
+        top.window.onUnityInitialized = sender => {
+            this.loading = false;
+            this.runFlag = true;
+            this.gameInstance = sender;
+            this._start();
+        };
+
+        this._onResize();
     },
     beforeDestroy() {
         this.runFlag = false;
@@ -232,6 +243,12 @@ export default {
             this.startExperiment = true;
             this.experimentsFinish = false;
             this._start();
+        },
+        _onResize() {
+            const container = this.$refs.experiment_frame_container.$el;
+            const frame = document.getElementById('experiment_frame');
+            frame.style.width = container.clientWidth + 'px';
+            frame.style.height = container.clientHeight + 'px';
         }
     }
 };

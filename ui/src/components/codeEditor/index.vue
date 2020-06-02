@@ -8,7 +8,7 @@
                 data-id="run_button"
                 type="primary"
                 icon="right-square"
-                style="margin-left: 16px"
+                style="margin: 0px 8px 0px 8px;"
                 v-bind:disabled="buttons.run_button"
                 :loading="runFlag"
                 @click="_runCode()"
@@ -362,6 +362,7 @@ export default {
                 this.runFlag = true;
                 this._clearVariables();
                 this.$message.success(`开始运行`, 2);
+                this.eventHandler && this.eventHandler['onRunCode'] && this.eventHandler['onRunCode']();
 
                 await eval(`(async () => { ${this._generateCode()} })()`);
                 if (this.experimentMode && this.experiment !== null) {

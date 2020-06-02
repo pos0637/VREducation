@@ -15,10 +15,14 @@
     </style>
     <script src="Build/UnityLoader.js"></script>
     <script>
-        top.window.gameInstance = UnityLoader.instantiate("unityContainer", "Build/zy.json");
+        var gameInstance = UnityLoader.instantiate("unityContainer", "Build/zy.json", {
+            onProgress: function (sender, progress) {
+                top.window.onUnityProgress && top.window.onUnityProgress(sender, progress);
+            }
+        });
 
         function onUnityInitialized() {
-            console.debug("onUnityInitialized");
+            top.window.onUnityInitialized && top.window.onUnityInitialized(gameInstance);
         }
 
         function onSnapshot(s) {
