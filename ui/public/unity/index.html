@@ -25,12 +25,12 @@
             top.window.onUnityInitialized && top.window.onUnityInitialized(gameInstance);
         }
 
-        function onSnapshot(s) {
-            console.debug(s);
+        function onSnapshot(data) {
+            top.window.onSnapshot && top.window.onSnapshot(gameInstance, data);
         }
 
         function onSignal() {
-            console.debug("onSignal");
+            top.window.onSignal && top.window.onSignal(gameInstance);
         }
     </script>
 </head>

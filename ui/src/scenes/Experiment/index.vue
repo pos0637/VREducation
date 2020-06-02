@@ -32,6 +32,7 @@
             </a-row>
         </a-layout>
         <Loading :visiable="loading" tip="加载中" />
+        <img id="experiment_image" style="display: none" src="image/test.png" />
     </div>
 </template>
 
@@ -105,6 +106,7 @@ export default {
                     }
                 },
                 onRunCode: () => {
+                    this.gameInstance.SendMessage('UintyConnectJS', 'StopScene', '');
                     this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
                 }
             },
@@ -118,14 +120,44 @@ export default {
         };
     },
     mounted() {
+        let signal = false;
+        top.window.onSignal = () => {
+            console.debug('onSignal');
+            signal = true;
+        };
+
         top.window.wait_for_sensor_signal = async () => {
+            /*
+            while (this.runFlag && !signal) {
+                await sleep(1000);
+            }
+            */
+
+            signal = false;
             await sleep(1000);
+            console.debug(signal);
+        };
+
+        let image = false;
+        top.window.onSnapshot = (sender, data) => {
+            console.debug('onSnapshot');
+            document.getElementById('experiment_image').src = 'data:image/png;base64,' + data;
+            image = true;
         };
 
         top.window.camera_snapshot = async exposure => {
+            /*
+            this.gameInstance.SendMessage('UintyConnectJS', 'Snapshot', (exposure / 10000).toString());
+            while (this.runFlag && !image) {
+                await sleep(1000);
+            }
+            */
+            image = false;
             console.debug(exposure);
+            console.debug(image);
+
             // eslint-disable-next-line no-undef
-            const mat = cv.imread('test_image');
+            const mat = cv.imread('experiment_image');
             this.$refs.codeEditor.setVariable('inspector_variable_image1', mat);
             return mat;
         };
