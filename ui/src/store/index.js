@@ -6,7 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         // 场景
-        scene: 'home',
+        scene: 'introduction',
 
         // 阶段
         stage: null,

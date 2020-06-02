@@ -2,10 +2,19 @@
     <a-layout>
         <a-row type="flex">
             代码编辑器
-            <a-button type="primary" icon="right-square" style="margin-left: 16px" v-bind:disabled="buttons.run_button" @click="_runCode()">运行</a-button>
-            <button @click="_generateXml()">dump</button>
-            <button @click="_generateCode()">generate</button>
-            <button @click="_runCode()">run</button>
+            <a-button
+                data-id="run_button"
+                type="primary"
+                icon="right-square"
+                style="margin-left: 16px"
+                v-bind:disabled="buttons.run_button"
+                :loading="runFlag"
+                @click="_runCode()"
+                >运行</a-button
+            >
+            <button @click="_generateXml()" style="display: none">dump</button>
+            <button @click="_generateCode()" style="display: none">generate</button>
+            <button @click="_runCode()" style="display: none">run</button>
         </a-row>
         <a-row type="flex" style="flex-grow: 1">
             <div id="editor" style="width: 100%; height: 100%" />
@@ -21,6 +30,7 @@
                     v-if="item.id !== null"
                     :ref="inspectorVariables[index].id"
                     :id="inspectorVariables[index].id"
+                    :data-id="inspectorVariables[index].id"
                     :data-name="item.name"
                     class="inspector_variable_image"
                     @click="_onImageInspectorClick"
@@ -38,8 +48,7 @@
 
 <style>
 .introjs-tooltip {
-    min-width: 500px !important;
-    min-height: 400px !important;
+    max-width: unset !important;
 }
 </style>
 
@@ -94,7 +103,8 @@ export default {
             imageInspectorData: null,
             buttons: {
                 run_button: false
-            }
+            },
+            runFlag: false
         };
     },
     mounted: function() {
@@ -321,6 +331,7 @@ export default {
         async _runCode() {
             try {
                 this.buttons.run_button = true;
+                this.runFlag = true;
                 this._clearVariables();
                 this.$message.success(`开始运行`, 2);
 
@@ -337,6 +348,7 @@ export default {
                 this.$message.fail(`运行失败: ${e}`, 2);
             } finally {
                 this.buttons.run_button = false;
+                this.runFlag = false;
             }
         },
         _eventHandler(event) {

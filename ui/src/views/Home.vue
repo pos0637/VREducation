@@ -10,8 +10,7 @@
                 <img src="@/assets/user.png" style="width:65px; float:left" />
                 <span class="userinfo">{{ this.userName }}</span>
                 <a-menu
-                    :default-selected-keys="['1']"
-                    :default-open-keys="['sub1']"
+                    :default-selected-keys="['introduction']"
                     class="menu"
                     mode="inline"
                     theme="dark"

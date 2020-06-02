@@ -109,8 +109,6 @@ export default {
         };
     },
     mounted() {
-        this.runFlag = true;
-
         top.window.wait_for_sensor_signal = async () => {
             await sleep(1000);
         };
@@ -203,6 +201,9 @@ export default {
         top.window.grab = async (sharp, center) => {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
         };
+
+        this.runFlag = true;
+        this._start();
     },
     beforeDestroy() {
         this.runFlag = false;
