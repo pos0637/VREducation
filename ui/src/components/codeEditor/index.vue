@@ -1,7 +1,9 @@
 <template>
     <a-layout>
         <a-row type="flex">
-            代码编辑器
+            <div style="flex-grow: 1; margin: 0px 8px 8px 8px;">
+                <div class="hint-background">{{ this.hint }}</div>
+            </div>
             <a-button
                 data-id="run_button"
                 type="primary"
@@ -19,10 +21,10 @@
         <a-row type="flex" style="flex-grow: 1">
             <div id="editor" style="width: 100%; height: 100%" />
         </a-row>
-        <a-row type="flex" align="bottom" style="height: 20px">
-            <a-col v-for="item in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_name">{{
-                item.name
-            }}</a-col>
+        <a-row type="flex" align="bottom" style="height: 20px; margin-top: 8px;">
+            <a-col v-for="item in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_name">
+                <div class="title-background">{{ item.name }}</div>
+            </a-col>
         </a-row>
         <a-row type="flex" align="bottom" style="height: 120px">
             <a-col v-for="(item, index) in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_data">
@@ -53,6 +55,29 @@
 </style>
 
 <style scoped>
+.hint-background {
+    width: 100%;
+    height: 100%;
+    line-height: 32px;
+    text-align: center;
+    border: 0px;
+    border-radius: 25px;
+    box-shadow: 1px 1px 1px 1px rgb(170, 170, 170) inset;
+    color: white;
+    background-color: rgb(255, 204, 0);
+}
+
+.title-background {
+    width: 100px;
+    height: 100%;
+    text-align: center;
+    margin-left: 16px;
+    border: 0px;
+    border-radius: 25px;
+    color: white;
+    background-color: rgb(255, 204, 0);
+}
+
 .inspector_variable_name {
     text-align: middle;
 }
@@ -65,6 +90,7 @@
 .inspector_variable_image {
     width: 100%;
     height: 100%;
+    padding: 8px;
 }
 
 .image_inspector {
@@ -104,6 +130,7 @@ export default {
             buttons: {
                 run_button: false
             },
+            hint: '代码编辑器',
             runFlag: false
         };
     },
@@ -230,6 +257,7 @@ export default {
             this.experimentMode = true;
             this.experiment = { experiment: experimentId, step: stepId, _step: step };
             this.eventHandler && this.eventHandler['onStartExperimentStep'] && this.eventHandler['onStartExperimentStep'](this.experiment);
+            this.hint = `当前实验 ${this.experiments[experimentId].name} 步骤: ${this.experiments[experimentId].steps[stepId].intro}`;
 
             return true;
         },

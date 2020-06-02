@@ -15,7 +15,19 @@
     </style>
     <script src="Build/UnityLoader.js"></script>
     <script>
-        UnityLoader.instantiate("unityContainer", "Build/zy.json");
+        top.window.gameInstance = UnityLoader.instantiate("unityContainer", "Build/zy.json");
+
+        function onUnityInitialized() {
+            console.debug("onUnityInitialized");
+        }
+
+        function onSnapshot(s) {
+            console.debug(s);
+        }
+
+        function onSignal() {
+            console.debug("onSignal");
+        }
     </script>
 </head>
 

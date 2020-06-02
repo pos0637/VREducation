@@ -1,12 +1,9 @@
 <template>
     <div id="content">
-        <a-layout style="width: 100%; height: 100%">
+        <a-layout style="width: 100%; height: 100%;">
             <a-row>
                 <a-col :span="12" style="text-align: left">
-                    <span>提示信息: </span>
-                    <span v-if="currentExperiment !== null && currentStep !== null"
-                        >当前实验 {{ experiments[currentExperiment].name }}; 步骤: {{ experiments[currentExperiment].steps[currentStep].intro }}
-                    </span>
+                    <span style="font-size: 1.4rem;">视觉抓取实验</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
                     <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
@@ -28,14 +25,18 @@
                         :eventHandler="eventHandler"
                     />
                 </a-col>
-                <a-col :span="8" class="vr">VR</a-col>
+                <a-col :span="8" id="experiment_frame_container" class="vr">
+                    <iframe id="experiment_frame" frameborder="0" scrolling="auto" src="unity/index.html"></iframe>
+                </a-col>
             </a-row>
         </a-layout>
+        <Loading :visiable="loading" tip="加载中" />
     </div>
 </template>
 
 <style scoped>
 #content {
+    position: relative;
     width: 100%;
     height: 100%;
 }
@@ -56,6 +57,7 @@
 <script>
 import { sleep } from '@/miscs/coroutine';
 import CodeEditor from '@/components/codeEditor';
+import Loading from '@/components/loading';
 import { blocks } from './blocks';
 import { toolbox } from './toolbox';
 import { tours } from './tours';
@@ -64,7 +66,8 @@ import { buildExperiments } from './experiments';
 export default {
     name: 'Experiment',
     components: {
-        CodeEditor
+        CodeEditor,
+        Loading
     },
     data: function() {
         return {
@@ -105,6 +108,7 @@ export default {
             currentStep: null,
             startExperiment: true,
             experimentsFinish: false,
+            loading: true,
             runFlag: false
         };
     },
@@ -202,8 +206,12 @@ export default {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
         };
 
-        this.runFlag = true;
-        this._start();
+        const container = document.getElementById('experiment_frame_container');
+        const frame = document.getElementById('experiment_frame');
+        frame.style.width = container.clientWidth + 'px';
+        frame.style.height = container.clientHeight + 'px';
+        // this.runFlag = true;
+        // this._start();
     },
     beforeDestroy() {
         this.runFlag = false;
