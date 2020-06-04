@@ -15,22 +15,22 @@
     </style>
     <script src="Build/UnityLoader.js"></script>
     <script>
-        var gameInstance = UnityLoader.instantiate("unityContainer", "Build/zy.json", {
+        top.window.gameInstance = UnityLoader.instantiate("unityContainer", "Build/zy.json", {
             onProgress: function (sender, progress) {
                 top.window.onUnityProgress && top.window.onUnityProgress(sender, progress);
             }
         });
 
         function onUnityInitialized() {
-            top.window.onUnityInitialized && top.window.onUnityInitialized(gameInstance);
+            top.window.onUnityInitialized && top.window.onUnityInitialized(top.window.gameInstance);
         }
 
         function onSnapshot(data) {
-            top.window.onSnapshot && top.window.onSnapshot(gameInstance, data);
+            top.window.onSnapshot && top.window.onSnapshot(top.window.gameInstance, data);
         }
 
         function onSignal() {
-            top.window.onSignal && top.window.onSignal(gameInstance);
+            top.window.onSignal && top.window.onSignal(top.window.gameInstance);
         }
     </script>
 </head>

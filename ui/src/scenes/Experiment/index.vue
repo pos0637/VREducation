@@ -25,9 +25,8 @@
                         :eventHandler="eventHandler"
                     />
                 </a-col>
-                <a-col :span="8" ref="experiment_frame_container" class="vr">
-                    <iframe id="experiment_frame" frameborder="0" scrolling="auto" src="unity/index.html"></iframe>
-                    <resize-observer @notify="_onResize" />
+                <a-col :span="8" style="height: 100%">
+                    <Docker target="UnityContainer" />
                 </a-col>
             </a-row>
         </a-layout>
@@ -48,16 +47,11 @@
     flex-direction: column;
     height: 100%;
 }
-
-#content .vr {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
 </style>
 
 <script>
 import { sleep } from '@/miscs/coroutine';
+import Docker from '@/components/docker';
 import CodeEditor from '@/components/codeEditor';
 import Loading from '@/components/loading';
 import { blocks } from './blocks';
@@ -68,6 +62,7 @@ import { buildExperiments } from './experiments';
 export default {
     name: 'Experiment',
     components: {
+        Docker,
         CodeEditor,
         Loading
     },
@@ -106,8 +101,7 @@ export default {
                     }
                 },
                 onRunCode: () => {
-                    this.gameInstance.SendMessage('UintyConnectJS', 'StopScene', '');
-                    this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                    this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
                 }
             },
             currentExperiment: null,
@@ -127,15 +121,11 @@ export default {
         };
 
         top.window.wait_for_sensor_signal = async () => {
-            /*
             while (this.runFlag && !signal) {
                 await sleep(1000);
             }
-            */
 
             signal = false;
-            await sleep(1000);
-            console.debug(signal);
         };
 
         let image = false;
@@ -146,16 +136,12 @@ export default {
         };
 
         top.window.camera_snapshot = async exposure => {
-            /*
             this.gameInstance.SendMessage('UintyConnectJS', 'Snapshot', (exposure / 10000).toString());
             while (this.runFlag && !image) {
                 await sleep(1000);
             }
-            */
-            image = false;
-            console.debug(exposure);
-            console.debug(image);
 
+            image = false;
             // eslint-disable-next-line no-undef
             const mat = cv.imread('experiment_image');
             this.$refs.codeEditor.setVariable('inspector_variable_image1', mat);
@@ -195,16 +181,16 @@ export default {
         top.window.findcenter = async (contours, image) => {
             const dst = image.clone();
             // eslint-disable-next-line no-undef
-            const moments = cv.moments(contours.get(1));
+            const moments = cv.moments(contours.get(0));
             // eslint-disable-next-line no-undef
-            const epsilon = 0.01 * cv.arcLength(contours.get(1), true);
+            const epsilon = 0.01 * cv.arcLength(contours.get(0), true);
             // eslint-disable-next-line no-undef
             const approx = new cv.Mat();
             // eslint-disable-next-line no-undef
-            cv.approxPolyDP(contours.get(1), approx, epsilon, true);
+            cv.approxPolyDP(contours.get(0), approx, epsilon, true);
             // eslint-disable-next-line no-undef
             const rect = cv.minAreaRect(approx);
-            const center = { x: moments.m10 / moments.m00, y: moments.m01 / moments.m00, angle: rect.angle.toFixed(1) };
+            const center = { x: parseInt(moments.m10 / moments.m00), y: parseInt(moments.m01 / moments.m00), angle: rect.angle.toFixed(1) };
 
             let startPoint = { x: center.x - 10, y: center.y };
             let endPoint = { x: center.x + 10, y: center.y };
@@ -223,16 +209,14 @@ export default {
         top.window.shapedetect = async (contours, image) => {
             const dst = image.clone();
             // eslint-disable-next-line no-undef
-            const moments = cv.moments(contours.get(1));
+            const moments = cv.moments(contours.get(0));
             // eslint-disable-next-line no-undef
-            const epsilon = 0.01 * cv.arcLength(contours.get(1), true);
+            const epsilon = 0.01 * cv.arcLength(contours.get(0), true);
             // eslint-disable-next-line no-undef
             const approx = new cv.Mat();
             // eslint-disable-next-line no-undef
-            cv.approxPolyDP(contours.get(1), approx, epsilon, true);
-            // eslint-disable-next-line no-undef
-            const rect = cv.minAreaRect(approx);
-            const center = { x: moments.m10 / moments.m00, y: moments.m01 / moments.m00, angle: rect.angle.toFixed(1) };
+            cv.approxPolyDP(contours.get(0), approx, epsilon, true);
+            const center = { x: parseInt(moments.m10 / moments.m00), y: parseInt(moments.m01 / moments.m00) };
             // eslint-disable-next-line no-undef
             cv.putText(dst, `sharp: ${approx.rows}`, center, cv.FONT_HERSHEY_SIMPLEX, 0.5, [0, 0, 255, 255]);
             this.$refs.codeEditor.setVariable('inspector_variable_image5', dst);
@@ -243,20 +227,23 @@ export default {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
         };
 
-        top.window.onUnityProgress = (sender, progress) => {
-            progress === 1 && sender.SendMessage('UintyConnectJS', 'SetScene', 3);
-        };
-
-        top.window.onUnityInitialized = sender => {
+        top.window.onUnityInitialized = () => {
             this.loading = false;
-            this.runFlag = true;
-            this.gameInstance = sender;
-            this._start();
+            if (!this.runFlag) {
+                this.runFlag = true;
+                this._start();
+            } else {
+                setTimeout(() => {
+                    this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                }, 1);
+            }
         };
 
-        this._onResize();
+        this.gameInstance = top.window.gameInstance;
+        this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
     },
     beforeDestroy() {
+        top.window.onUnityInitialized = null;
         this.runFlag = false;
     },
     methods: {
@@ -275,12 +262,6 @@ export default {
             this.startExperiment = true;
             this.experimentsFinish = false;
             this._start();
-        },
-        _onResize() {
-            const container = this.$refs.experiment_frame_container.$el;
-            const frame = document.getElementById('experiment_frame');
-            frame.style.width = container.clientWidth + 'px';
-            frame.style.height = container.clientHeight + 'px';
         }
     }
 };

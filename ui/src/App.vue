@@ -1,8 +1,7 @@
 <template>
     <div id="app">
-        <div id="nav">
-            <component v-bind:is="content"></component>
-        </div>
+        <component v-bind:is="content"></component>
+        <UnityContainer :visiable="true" />
     </div>
 </template>
 
@@ -16,28 +15,18 @@
     width: 100%;
     height: 100%;
 }
-
-#nav {
-    width: 100%;
-    height: 100%;
-}
-
-#nav a {
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-    color: #42b983;
-}
 </style>
 
 <script>
+import UnityContainer from '@/components/unityContainer';
 import Splash from '@/views/Splash';
 import Home from '@/views/Home';
 
 export default {
     name: 'app',
+    components: {
+        UnityContainer
+    },
     computed: {
         content() {
             const scene = this.$store.state.scene;

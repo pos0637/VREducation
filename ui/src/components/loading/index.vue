@@ -17,7 +17,7 @@
 
 <script>
 export default {
-    name: 'loading',
+    name: 'Loading',
     props: {
         visiable: Boolean,
         tip: String
