@@ -3,7 +3,7 @@
         <a-layout style="width: 100%; height: 100%; background-color: #292929;">
             <a-row style="padding: 8px;">
                 <a-col :span="12" style="text-align: left">
-                    <span style="font-size: 1.4rem; color: white;">工业机器人内部结构介绍</span>
+                    <span style="font-size: 1.4rem; color: white;">视觉工作站拆装</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
                     <a-button type="primary" icon="forward" style="margin-left: 8px;" @click="_nextUnit">下一单元</a-button>
@@ -29,7 +29,7 @@
 import Docker from '@/components/docker';
 
 export default {
-    name: 'RobotStructural',
+    name: 'VisionSystemStructural',
     components: {
         Docker
     },
@@ -41,14 +41,14 @@ export default {
             }, 1);
         };
 
-        gameInstance.SendMessage('UintyConnectJS', 'SetScene', 2);
+        gameInstance.SendMessage('UintyConnectJS', 'SetScene', 4);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;
     },
     methods: {
         _nextUnit() {
-            this.$store.commit('changeScene', 'robotProgramming', null, null);
+            this.$store.commit('changeScene', 'experiment', null, null);
         }
     }
 };

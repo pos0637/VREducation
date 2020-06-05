@@ -32,17 +32,17 @@
                             <span>机器人示教原理</span>
                         </div>
                     </a-menu-item>
-                    <a-menu-item key="experiment">
+                    <a-menu-item key="visionSystemStructural">
                         <div>
                             <span>视觉工作站拆装</span>
                         </div>
                     </a-menu-item>
-                    <a-menu-item key="experiment1">
+                    <a-menu-item key="experiment">
                         <div>
                             <span>视觉抓取实验</span>
                         </div>
                     </a-menu-item>
-                    <a-menu-item key="experiment2">
+                    <a-menu-item key="exam">
                         <div>
                             <span>实&nbsp;验&nbsp;考&nbsp;核</span>
                         </div>
@@ -130,8 +130,10 @@
 <script>
 import Introduction from '@/scenes/Introduction';
 import RobotStructural from '@/scenes/RobotStructural';
+import VisionSystemStructural from '@/scenes/VisionSystemStructural';
 import RobotProgramming from '@/scenes/RobotProgramming';
 import Experiment from '@/scenes/Experiment';
+import Exam from '@/scenes/Exam';
 
 export default {
     name: 'Home',
@@ -149,10 +151,14 @@ export default {
                 return RobotStructural;
             } else if (scene === 'robotProgramming') {
                 return RobotProgramming;
+            } else if (scene === 'visionSystemStructural') {
+                return VisionSystemStructural;
             } else if (scene === 'experiment') {
                 return Experiment;
+            } else if (scene === 'exam') {
+                return Exam;
             } else {
-                return Experiment;
+                return Introduction;
             }
         }
     },

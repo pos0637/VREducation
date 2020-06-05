@@ -88,8 +88,9 @@
 }
 
 .inspector_variable_image {
-    width: 100%;
-    height: 100%;
+    width: 120px;
+    height: 120px;
+    margin: 0 10px;
     padding: 8px;
 }
 

@@ -6,24 +6,13 @@
                     <span style="font-size: 1.4rem;">视觉抓取实验</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
-                    <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
-                        {{ currentExperiment === null ? '开始实验' : experimentsFinish ? '实验完成' : '下一实验步骤' }}
-                    </a-button>
-                    <a-button type="primary" icon="question" style="margin-left: 8px" @click="_restart">重新学习</a-button>
+                    <a-button type="primary" icon="question" style="margin-left: 8px" @click="_commit">提交实验考核结果</a-button>
                     <a-button type="primary" icon="forward" style="margin-left: 8px">下一单元</a-button>
                 </a-col>
             </a-row>
             <a-row style="height: 100%">
                 <a-col :span="16" class="codeEditor">
-                    <CodeEditor
-                        ref="codeEditor"
-                        :blocks="blocks"
-                        :toolbox="toolbox"
-                        :tours="tours"
-                        :experiments="experiments"
-                        :inspectorVariables="inspectorVariables"
-                        :eventHandler="eventHandler"
-                    />
+                    <CodeEditor ref="codeEditor" :blocks="blocks" :toolbox="toolbox" :inspectorVariables="inspectorVariables" :eventHandler="eventHandler" />
                 </a-col>
                 <a-col :span="8" style="height: 100%">
                     <Docker target="UnityContainer" />
@@ -34,6 +23,12 @@
         <img id="experiment_image" style="display: none" src="image/test.png" />
     </div>
 </template>
+
+<style>
+.introjs-tooltip {
+    max-width: unset !important;
+}
+</style>
 
 <style scoped>
 #content {
@@ -56,11 +51,9 @@ import CodeEditor from '@/components/codeEditor';
 import Loading from '@/components/loading';
 import { blocks } from './blocks';
 import { toolbox } from './toolbox';
-import { tours } from './tours';
-import { buildExperiments } from './experiments';
 
 export default {
-    name: 'Experiment',
+    name: 'Exam',
     components: {
         Docker,
         CodeEditor,
@@ -70,8 +63,6 @@ export default {
         return {
             blocks: blocks,
             toolbox: toolbox,
-            tours: tours,
-            experiments: buildExperiments(this),
             inspectorVariables: [
                 { name: '图片', id: 'inspector_variable_image1' },
                 { name: '预处理图片', id: 'inspector_variable_image2' },
@@ -81,33 +72,10 @@ export default {
                 { name: null, id: null }
             ],
             eventHandler: {
-                onTourComplete: id => {
-                    this.$refs.codeEditor.startExperiment(id);
-                },
-                onStartExperimentStep: experiment => {
-                    this.currentExperiment = experiment.experiment;
-                    this.currentStep = experiment.step;
-                    this.$message.success(
-                        `${experiment.step > 0 ? '操作成功, 下一步' : ''}${this.experiments[this.currentExperiment].steps[this.currentStep].intro}`,
-                        2
-                    );
-                },
-                onExperimentComplete: experiment => {
-                    if (experiment.experiment === this.experiments.length - 1) {
-                        this.experimentsFinish = true;
-                        this.$message.success('本单元实验完成,请进入下一单元学习');
-                    } else {
-                        this.startExperiment = true;
-                    }
-                },
                 onRunCode: () => {
                     this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
                 }
             },
-            currentExperiment: null,
-            currentStep: null,
-            startExperiment: true,
-            experimentsFinish: false,
             loading: true,
             runFlag: false,
             gameInstance: null
@@ -231,7 +199,26 @@ export default {
             this.loading = false;
             if (!this.runFlag) {
                 this.runFlag = true;
-                this._start();
+                const options = {
+                    nextLabel: '<span style="font-size: 1.0rem">下一步</span>',
+                    prevLabel: '<span style="font-size: 1.0rem">上一步</span>',
+                    skipLabel: '<span style="font-size: 1.0rem">跳过</span>',
+                    doneLabel: '<span style="font-size: 1.0rem; color: blue">开始实验</span>',
+                    tooltipPosition: 'auto',
+                    tooltipClass: 'introjs-tooltip',
+                    exitOnEsc: false,
+                    exitOnOverlayClick: false
+                };
+
+                const steps = [
+                    {
+                        intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/exam.html"></iframe>'
+                    }
+                ];
+
+                this.$intro()
+                    .setOptions(Object.assign(options, { steps: steps }))
+                    .start();
             } else {
                 setTimeout(() => {
                     this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
@@ -247,22 +234,7 @@ export default {
         this.runFlag = false;
     },
     methods: {
-        _start() {
-            if (this.currentExperiment === null) {
-                this.startExperiment = false;
-                this.$refs.codeEditor.startTour(0);
-            } else if (this.currentExperiment < this.experiments.length) {
-                this.startExperiment = false;
-                this.$refs.codeEditor.startTour(this.currentExperiment + 1);
-            }
-        },
-        _restart() {
-            this.currentExperiment = null;
-            this.currentStep = null;
-            this.startExperiment = true;
-            this.experimentsFinish = false;
-            this._start();
-        }
+        _commit() {}
     }
 };
 </script>
