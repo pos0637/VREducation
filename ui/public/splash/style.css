@@ -1,0 +1,273 @@
+﻿@charset "utf-8";
+/* CSS Document */
+* {
+    margin: 0 auto;
+    padding: 0;
+}
+body {
+    background: #fff url(./images/background.jpg) no-repeat top center;
+    font-family: 'Microsoft Yahei';
+    font-size: 14px;
+    color: #000;
+    line-height: 20px;
+}
+a,
+a:visited {
+    color: #000;
+    text-decoration: none;
+}
+a:hover {
+    color: #f00;
+    text-decoration: none;
+}
+img {
+    border: 0;
+}
+.FL {
+    float: left;
+}
+.FR {
+    float: right;
+}
+.divline_M {
+    height: 56px;
+    line-height: 56px;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+}
+.divline_T {
+    height: 10px;
+    line-height: 10px;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+}
+.divline_F {
+    height: 20px;
+    line-height: 20px;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+}
+.zB {
+    font-weight: bold;
+}
+.z_16 {
+    font-size: 16px;
+}
+.z_24 {
+    font-size: 32px;
+}
+/*白色字*/
+.zW {
+    color: #fff;
+}
+.zW a {
+    color: #fff;
+}
+.zW a:visited {
+    color: #fff;
+}
+.zW a:hover {
+    color: #f00;
+}
+/*深蓝色字*/
+.zL {
+    color: #091a87;
+}
+.zL a {
+    color: #091a87;
+}
+.zL a:visited {
+    color: #091a87;
+}
+.zL a:hover {
+    color: #f00;
+}
+/*总栏目*/
+.container {
+    width: 1200px;
+    height: auto;
+    overflow: hidden;
+}
+.M00 {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+}
+/*头部*/
+.header {
+    width: 1200px;
+    height: 277px;
+    overflow: hidden;
+}
+/*底部*/
+.footing {
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    overflow: hidden;
+}
+/*菜单*/
+.nav {
+    width: 1200px;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+}
+.nav ul {
+    width: 1200px;
+    height: 40px;
+    list-style: none;
+}
+.nav ul li {
+    width: 199px;
+    height: 40px;
+    background: #161694;
+    float: left;
+    margin-right: 1px;
+    position: inherit;
+}
+.nav ul li a,
+.nav ul li a:visited {
+    width: 199px;
+    height: 40px;
+    color: #fff;
+    display: block;
+    text-align: center;
+}
+.nav ul li a:hover {
+    background: red;
+    color: #fff;
+}
+/*大图*/
+.Banner {
+    width: 100%;
+    height: 400px;
+    text-align: center;
+    margin-top: 1px;
+    overflow: hidden;
+}
+/*主题*/
+.Main {
+    width: 1140px;
+    height: 406px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 30px;
+    overflow: hidden;
+}
+.BT {
+    width: auto;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+}
+.Main_L {
+    width: 750px;
+    height: auto;
+    overflow: hidden;
+}
+.Main_R {
+    width: 370px;
+    height: auto;
+    overflow: hidden;
+}
+.pic {
+    width: 177px;
+    height: 114px;
+    margin: 0 5px;
+    overflow: hidden;
+}
+/*List页面*/
+.List_top {
+    width: 100%;
+    height: 200px;
+    background-color: #dae2e6;
+    overflow: hidden;
+}
+.List_Menu {
+    width: 100%;
+    height: 40px;
+    background-color: #0a1c90;
+    line-height: 40px;
+    overflow: hidden;
+}
+.List_L {
+    width: 234px;
+    height: auto;
+    min-height: 460px;
+    overflow: hidden;
+}
+.List_R {
+    width: 946px;
+    height: auto;
+    min-height: 460px;
+    overflow: hidden;
+}
+.List_L00 {
+    width: 184px;
+    height: 60px;
+    background-color: #0a1c90;
+    padding-left: 50px;
+    line-height: 60px;
+    overflow: hidden;
+}
+.List_L01 {
+    width: 234px;
+    height: 50px;
+    background-color: #eeeeee;
+    border-bottom: #e1e1e1 1px solid;
+    line-height: 50px;
+    overflow: hidden;
+}
+.List_R00 {
+    width: auto;
+    height: 36px;
+    line-height: 36px;
+    overflow: hidden;
+}
+.List_R01 {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 50px;
+}
+.List_R02 {
+    width: 946px;
+    height: 40px;
+    border-bottom: #333 1px dotted;
+    line-height: 40px;
+    overflow: hidden;
+}
+.List_R02_R {
+    width: 100px;
+    height: 40px;
+    text-align: right;
+}
+.List_R03 {
+    width: 226px;
+    height: auto;
+    margin: 5px !important;
+    margin: 5px 4px;
+    overflow: hidden;
+}
+.List_R03_T {
+    width: 220px;
+    height: 140px;
+    padding: 2px;
+    border: #ccc 1px solid;
+}
+.List_R03_B {
+    width: 226px;
+    height: auto;
+    text-align: center;
+}
+.TP32 {
+    width: 177px;
+    height: 114px;
+}
+.imgSi {
+    width: 220px;
+    height: 140px;
+}
