@@ -1,16 +1,16 @@
 <template>
-    <div id="content">
-        <a-layout style="width: 100%; height: 100%;">
-            <a-row>
+    <div class="content">
+        <a-layout style="width: 100%; height: 100%; background-color: #292929;">
+            <a-row style="padding: 8px;">
                 <a-col :span="12" style="text-align: left">
-                    <span style="font-size: 1.4rem;">视觉抓取实验</span>
+                    <span style="font-size: 1.4rem; color: white;">视觉抓取实验</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
                     <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
                         {{ currentExperiment === null ? '开始实验' : experimentsFinish ? '实验完成' : '下一实验步骤' }}
                     </a-button>
                     <a-button type="primary" icon="question" style="margin-left: 8px" @click="_restart">重新学习</a-button>
-                    <a-button type="primary" icon="forward" style="margin-left: 8px">下一单元</a-button>
+                    <a-button type="primary" icon="forward" style="margin-left: 8px" @click="_nextUnit">下一单元</a-button>
                 </a-col>
             </a-row>
             <a-row style="height: 100%">
@@ -36,13 +36,13 @@
 </template>
 
 <style scoped>
-#content {
+.content {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-#content .codeEditor {
+.codeEditor {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -247,6 +247,9 @@ export default {
         this.runFlag = false;
     },
     methods: {
+        _nextUnit() {
+            this.$store.commit('changeScene', 'robotStructural', null, null);
+        },
         _start() {
             if (this.currentExperiment === null) {
                 this.startExperiment = false;

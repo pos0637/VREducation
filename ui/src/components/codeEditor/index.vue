@@ -1,6 +1,6 @@
 <template>
     <a-layout>
-        <a-row type="flex">
+        <a-row type="flex" style="padding-top: 8px;">
             <div style="flex-grow: 1; margin: 0px 8px 8px 8px;">
                 <div class="hint-background">{{ this.hint }}</div>
             </div>
@@ -185,6 +185,7 @@ export default {
             this.workspace.addChangeListener(this._eventHandler.bind(this));
             Blockly.svgResize(this.workspace);
             setTimeout(() => {
+                this.workspace.updateToolbox(this.toolboxData);
                 Blockly.svgResize(this.workspace);
             }, 1);
 

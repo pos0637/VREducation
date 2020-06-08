@@ -1,12 +1,12 @@
 <template>
-    <div id="content">
-        <a-layout style="width: 100%; height: 100%;">
-            <a-row>
+    <div class="content">
+        <a-layout style="width: 100%; height: 100%; background-color: #292929;">
+            <a-row style="padding: 8px;">
                 <a-col :span="12" style="text-align: left">
-                    <span style="font-size: 1.4rem;">视觉抓取实验</span>
+                    <span style="font-size: 1.4rem; color: white;">实验考核</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
-                    <a-button type="primary" icon="question" style="margin-left: 8px" @click="_commit">提交实验考核结果</a-button>
+                    <a-button data-id="exam_button" type="primary" icon="question" style="margin-left: 8px" @click="_commit">提交实验考核结果</a-button>
                     <a-button type="primary" icon="forward" style="margin-left: 8px">下一单元</a-button>
                 </a-col>
             </a-row>
@@ -31,13 +31,13 @@
 </style>
 
 <style scoped>
-#content {
+.content {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-#content .codeEditor {
+.codeEditor {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -51,6 +51,7 @@ import CodeEditor from '@/components/codeEditor';
 import Loading from '@/components/loading';
 import { blocks } from './blocks';
 import { toolbox } from './toolbox';
+import { buildSteps } from './tours';
 
 export default {
     name: 'Exam',
@@ -210,14 +211,8 @@ export default {
                     exitOnOverlayClick: false
                 };
 
-                const steps = [
-                    {
-                        intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/exam.html"></iframe>'
-                    }
-                ];
-
                 this.$intro()
-                    .setOptions(Object.assign(options, { steps: steps }))
+                    .setOptions(Object.assign(options, buildSteps()[0]))
                     .start();
             } else {
                 setTimeout(() => {

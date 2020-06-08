@@ -11,6 +11,7 @@
                 <span class="userinfo">{{ this.userName }}</span>
                 <a-menu
                     :default-selected-keys="['introduction']"
+                    :selectedKeys="selectedKeys"
                     class="menu"
                     mode="inline"
                     theme="dark"
@@ -160,6 +161,10 @@ export default {
             } else {
                 return Introduction;
             }
+        },
+        selectedKeys() {
+            console.debug([this.$store.state.scene]);
+            return [this.$store.state.scene];
         }
     },
     methods: {

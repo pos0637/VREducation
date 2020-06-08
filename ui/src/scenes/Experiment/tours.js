@@ -11,7 +11,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 600px; magin: 10px;" scrolling="auto" src="guides/introduction.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 500px; height: 600px; magin: 10px;" scrolling="auto" src="guides/experiment.html"></iframe>'
             },
             {
                 intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/snapshot.html"></iframe>'
