@@ -185,7 +185,6 @@ export default {
             this.workspace.addChangeListener(this._eventHandler.bind(this));
             Blockly.svgResize(this.workspace);
             setTimeout(() => {
-                this.workspace.updateToolbox(this.toolboxData);
                 Blockly.svgResize(this.workspace);
             }, 1);
 
@@ -273,6 +272,9 @@ export default {
             this.variables[id] = value;
             // eslint-disable-next-line no-undef
             cv.imshow(id, value);
+        },
+        updateToolbox() {
+            this.workspace.updateToolbox(this.toolboxData);
         },
         _enableBlocks(blocks) {
             if (typeof blocks === 'undefined' || blocks === null) {

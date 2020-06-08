@@ -214,6 +214,7 @@ export default {
 
                 this.$intro()
                     .setOptions(Object.assign(options, buildSteps()[0]))
+                    .onexit(() => this.$refs.codeEditor.updateToolbox())
                     .start();
             } else {
                 setTimeout(() => {
