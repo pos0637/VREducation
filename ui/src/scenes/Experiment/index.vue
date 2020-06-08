@@ -248,7 +248,7 @@ export default {
     },
     methods: {
         _nextUnit() {
-            this.$store.commit('changeScene', 'robotStructural', null, null);
+            this.$store.commit('changeScene', 'exam', null, null);
         },
         _start() {
             if (this.currentExperiment === null) {

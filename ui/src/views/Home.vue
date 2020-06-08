@@ -16,6 +16,7 @@
                     mode="inline"
                     theme="dark"
                     style="background:#292929; font-size: 18px"
+                    :selectable="false"
                     @select="_onMenuSelect"
                 >
                     <a-menu-item key="introduction">
@@ -51,11 +52,6 @@
                     <a-menu-item key="experiment3">
                         <div>
                             <span>延&nbsp;伸&nbsp;阅&nbsp;读</span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item key="experiment4">
-                        <div>
-                            <span>帮&nbsp;助&nbsp;文&nbsp;档</span>
                         </div>
                     </a-menu-item>
                 </a-menu>
