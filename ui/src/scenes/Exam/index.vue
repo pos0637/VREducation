@@ -194,6 +194,7 @@ export default {
 
         top.window.grab = async (sharp, center) => {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
+            this.gameInstance.SendMessage('UintyConnectJS', 'Grab', `${center.x}:${center.y}`);
         };
 
         top.window.onUnityInitialized = () => {
@@ -216,6 +217,7 @@ export default {
                     .start();
             } else {
                 setTimeout(() => {
+                    console.debug('StartScene');
                     this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
                 }, 1);
             }

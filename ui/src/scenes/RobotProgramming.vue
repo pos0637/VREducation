@@ -9,6 +9,14 @@
                     <a-button type="primary" icon="forward" style="margin-left: 8px;" @click="_nextUnit">下一单元</a-button>
                 </a-col>
             </a-row>
+            <a-row style="width: 100%; height: 100%;">
+                <iframe
+                    src="https://view.officeapps.live.com/op/view.aspx?src=http://qblk2bgoy.bkt.clouddn.com/1.pptx"
+                    width="100%"
+                    height="100%"
+                    frameborder="0"
+                />
+            </a-row>
         </a-layout>
     </div>
 </template>

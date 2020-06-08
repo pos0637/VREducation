@@ -21,8 +21,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background-repeat: no-repeat;
-    background-position: top center;
+    background-repeat: round;
 }
 
 .header {

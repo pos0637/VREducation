@@ -225,6 +225,7 @@ export default {
 
         top.window.grab = async (sharp, center) => {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
+            this.gameInstance.SendMessage('UintyConnectJS', 'Grab', `${center.x}:${center.y}`);
         };
 
         top.window.onUnityInitialized = () => {

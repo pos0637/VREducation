@@ -159,7 +159,6 @@ export default {
             }
         },
         selectedKeys() {
-            console.debug([this.$store.state.scene]);
             return [this.$store.state.scene];
         }
     },
