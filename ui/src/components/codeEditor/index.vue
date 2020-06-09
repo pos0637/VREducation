@@ -366,7 +366,7 @@ export default {
                 this.runFlag = true;
                 this._clearVariables();
                 this.$message.success(`开始运行`, 2);
-                this.eventHandler && this.eventHandler['onRunCode'] && this.eventHandler['onRunCode']();
+                this.eventHandler && this.eventHandler['onRunCode'] && (await this.eventHandler['onRunCode']());
 
                 await eval(`(async () => { ${this._generateCode()} })()`);
                 if (this.experimentMode && this.experiment !== null) {

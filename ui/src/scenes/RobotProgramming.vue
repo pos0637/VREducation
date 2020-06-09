@@ -33,11 +33,6 @@
 <script>
 export default {
     name: 'RobotProgramming',
-    data() {
-        return {
-            startPlay: false
-        };
-    },
     mounted() {
         const options = {
             nextLabel: '<span style="font-size: 1.0rem">下一步</span>',
@@ -61,22 +56,9 @@ export default {
 
         this.$intro()
             .setOptions(Object.assign(options, { steps: steps }))
-            .onexit(() => {
-                this.startPlay = true;
-                this._onResize();
-            })
             .start();
     },
     methods: {
-        _onResize() {
-            if (!this.startPlay) {
-                return;
-            }
-
-            const rect = this.$refs.container.$el.getBoundingClientRect();
-            this.playerOptions.width = rect.width;
-            this.playerOptions.height = rect.height;
-        },
         _nextUnit() {
             this.$store.commit('changeScene', 'visionSystemStructural', null, null);
         }

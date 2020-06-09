@@ -30,11 +30,6 @@ import Docker from '@/components/docker';
 
 export default {
     name: 'VisionSystemStructural',
-    data() {
-        return {
-            startPlay: false
-        };
-    },
     components: {
         Docker
     },
@@ -61,10 +56,6 @@ export default {
 
         this.$intro()
             .setOptions(Object.assign(options, { steps: steps }))
-            .onexit(() => {
-                this.startPlay = true;
-                this._onResize();
-            })
             .start();
         const gameInstance = top.window.gameInstance;
         top.window.onUnityInitialized = () => {
@@ -79,15 +70,6 @@ export default {
         top.window.onUnityInitialized = null;
     },
     methods: {
-        _onResize() {
-            if (!this.startPlay) {
-                return;
-            }
-
-            const rect = this.$refs.container.$el.getBoundingClientRect();
-            this.playerOptions.width = rect.width;
-            this.playerOptions.height = rect.height;
-        },
         _nextUnit() {
             this.$store.commit('changeScene', 'experiment', null, null);
         }

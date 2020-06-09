@@ -73,8 +73,8 @@ export default {
                 { name: null, id: null }
             ],
             eventHandler: {
-                onRunCode: () => {
-                    this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
+                onRunCode: async () => {
+                    await top.window.resetScene(3);
                 }
             },
             loading: true,
@@ -197,6 +197,16 @@ export default {
             this.gameInstance.SendMessage('UintyConnectJS', 'Grab', `${center.x}:${center.y}`);
         };
 
+        let initialized = false;
+        top.window.resetScene = async id => {
+            this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', id);
+            while (this.runFlag && !initialized) {
+                await sleep(1000);
+            }
+
+            initialized = false;
+        };
+
         top.window.onUnityInitialized = () => {
             this.loading = false;
             if (!this.runFlag) {
@@ -220,6 +230,7 @@ export default {
                 setTimeout(() => {
                     console.debug('StartScene');
                     this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                    initialized = true;
                 }, 1);
             }
         };
