@@ -16,7 +16,6 @@
                     mode="inline"
                     theme="dark"
                     style="background:#292929; font-size: 18px"
-                    :selectable="false"
                     @select="_onMenuSelect"
                 >
                     <a-menu-item key="introduction">
