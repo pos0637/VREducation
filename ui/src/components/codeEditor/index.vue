@@ -370,7 +370,7 @@ export default {
 
                 await eval(`(async () => { ${this._generateCode()} })()`);
                 if (this.experimentMode && this.experiment !== null) {
-                    if (this.experiment._step.expect && (await this.experiment._step.expect())) {
+                    if (this.experiment._step.expect && typeof this.experiment._step.expect === 'function' && (await this.experiment._step.expect())) {
                         this._onExperimentStepComplete(this.experiment);
                     }
                 }

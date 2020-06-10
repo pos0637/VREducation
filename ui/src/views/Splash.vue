@@ -51,7 +51,7 @@ export default {
         };
 
         top.window.onUnityInitialized = () => {
-            this.$store.commit('changeScene', 'introduction', null, null);
+            this.$store.commit('changeScene', { scene: 'introduction', stage: null, step: null });
         };
     },
     beforeDestroy() {

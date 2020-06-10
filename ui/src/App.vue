@@ -39,7 +39,7 @@ export default {
     },
     methods: {
         onChangeScene() {
-            this.$store.commit('changeScene', 'about', null, null);
+            this.$store.commit('changeScene', { scene: 'about', stage: null, step: null });
         }
     }
 };

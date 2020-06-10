@@ -11,11 +11,12 @@
                 <span class="userinfo">{{ this.userName }}</span>
                 <a-menu
                     :default-selected-keys="['introduction']"
+                    :defaultOpenKeys="['experiment']"
                     :selectedKeys="selectedKeys"
                     class="menu"
                     mode="inline"
                     theme="dark"
-                    style="background:#292929; font-size: 18px"
+                    style="background:#292929; font-size: 18px;"
                     @select="_onMenuSelect"
                 >
                     <a-menu-item key="introduction">
@@ -38,17 +39,59 @@
                             <span>视觉工作站拆装</span>
                         </div>
                     </a-menu-item>
-                    <a-menu-item key="experiment">
-                        <div>
-                            <span>视觉抓取实验</span>
-                        </div>
-                    </a-menu-item>
+                    <a-sub-menu key="experiment" title="视觉抓取实验">
+                        <a-menu-item key="experiment1">
+                            <div>
+                                <span>图像采集实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment2">
+                            <div>
+                                <span>曝光度实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment3">
+                            <div>
+                                <span>图像预处理实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment4">
+                            <div>
+                                <span>二值化调整阈值</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment5">
+                            <div>
+                                <span>提取边缘实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment6">
+                            <div>
+                                <span>提取边缘阈值</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment7">
+                            <div>
+                                <span>提取中心点实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment8">
+                            <div>
+                                <span>形状识别实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment9">
+                            <div>
+                                <span>机器人抓取实验</span>
+                            </div>
+                        </a-menu-item>
+                    </a-sub-menu>
                     <a-menu-item key="exam">
                         <div>
                             <span>实&nbsp;验&nbsp;考&nbsp;核</span>
                         </div>
                     </a-menu-item>
-                    <a-menu-item key="experiment3">
+                    <a-menu-item key="help">
                         <div>
                             <span>延&nbsp;伸&nbsp;阅&nbsp;读</span>
                         </div>
@@ -115,6 +158,14 @@
     border-bottom: 2px solid #dada28;
 }
 
+.ant-menu {
+    background-color: #292929 !important;
+}
+
+.ant-menu-dark .ant-menu-inline.ant-menu-sub {
+    box-shadow: 0 2px 8px #292929 inset !important;
+}
+
 #framework .ant-layout-content {
     width: 100%;
     height: 100%;
@@ -149,7 +200,7 @@ export default {
                 return RobotProgramming;
             } else if (scene === 'visionSystemStructural') {
                 return VisionSystemStructural;
-            } else if (scene === 'experiment') {
+            } else if (scene.startsWith('experiment')) {
                 return Experiment;
             } else if (scene === 'exam') {
                 return Exam;
@@ -163,7 +214,11 @@ export default {
     },
     methods: {
         _onMenuSelect(item) {
-            this.$store.commit('changeScene', item.key, null, null);
+            if (item.key.startsWith('experiment')) {
+                this.$store.commit('changeScene', { scene: item.key, stage: parseInt(item.key.substring('experiment'.length)) - 1, step: null });
+            } else {
+                this.$store.commit('changeScene', { scene: item.key, stage: null, step: null });
+            }
         }
     }
 };

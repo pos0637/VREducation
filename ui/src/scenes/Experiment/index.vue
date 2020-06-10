@@ -259,9 +259,15 @@ export default {
         top.window.onUnityInitialized = null;
         this.runFlag = false;
     },
+    watch: {
+        '$store.state.stage': function() {
+            this.startExperiment = false;
+            this.$refs.codeEditor.startTour(this.$store.state.stage);
+        }
+    },
     methods: {
         _nextUnit() {
-            this.$store.commit('changeScene', 'exam', null, null);
+            this.$store.commit('changeScene', { scene: 'exam', stage: null, step: null });
         },
         _start() {
             if (this.currentExperiment === null) {

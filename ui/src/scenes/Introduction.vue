@@ -70,7 +70,6 @@ export default {
                 intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/introduction.html"></iframe>'
             },
             {
-                element: document.querySelectorAll('[data-id="next_unit"]')[0],
                 intro: '观看完毕后点击 下一单元 按钮, 进入下一单元学习'
             }
         ];
@@ -94,7 +93,7 @@ export default {
             this.playerOptions.height = rect.height;
         },
         _nextUnit() {
-            this.$store.commit('changeScene', 'robotStructural', null, null);
+            this.$store.commit('changeScene', { scene: 'robotStructural', stage: null, step: null });
         }
     }
 };

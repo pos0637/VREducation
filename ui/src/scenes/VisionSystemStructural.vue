@@ -49,7 +49,6 @@ export default {
                 intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/vision.html"></iframe>'
             },
             {
-                element: document.querySelectorAll('[data-id="next_unit"]')[0],
                 intro: '实训完毕后点击 下一单元 按钮, 进入下一单元学习'
             }
         ];
@@ -71,7 +70,7 @@ export default {
     },
     methods: {
         _nextUnit() {
-            this.$store.commit('changeScene', 'experiment', null, null);
+            this.$store.commit('changeScene', { scene: 'experiment', stage: null, step: null });
         }
     }
 };

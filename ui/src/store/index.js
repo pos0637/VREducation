@@ -19,26 +19,23 @@ export default new Vuex.Store({
          * 改变场景
          *
          * @param {*} state 状态
-         * @param {*} scene 场景
-         * @param {*} stage 阶段
-         * @param {*} step 步骤
+         * @param {*} data 数据
          */
-        changeScene(state, scene, stage, step) {
-            state.scene = scene;
-            state.stage = stage;
-            state.step = step;
+        changeScene(state, data) {
+            state.scene = data.scene;
+            state.stage = data.stage;
+            state.step = data.step;
         },
 
         /**
          * 改变阶段
          *
          * @param {*} state 状态
-         * @param {*} scene 场景
-         * @param {*} stage 阶段
+         *@param {*} data 数据
          */
-        changeStage(state, stage, step) {
-            state.stage = stage;
-            state.step = step;
+        changeStage(state, data) {
+            state.stage = data.stage;
+            state.step = data.step;
         }
     },
     actions: {},
