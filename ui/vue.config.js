@@ -30,5 +30,6 @@ module.exports = {
                 introJs: ['intro.js']
             })
         ]
-    }
+    },
+    publicPath: './'
 };

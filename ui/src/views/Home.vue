@@ -8,7 +8,8 @@
         <a-layout class="layout">
             <a-layout-sider>
                 <img src="@/assets/user.png" style="width:65px; float:left" />
-                <span class="userinfo">{{ this.userName }}</span>
+                <span class="userinfo">{{ this.userInfo.realname ? this.userInfo.realname : '默认用户' }}</span>
+                <span class="logout"><a href="javascrip:void(0);" @click="_logout">退出登录</a></span>
                 <a-menu
                     :default-selected-keys="['introduction']"
                     :defaultOpenKeys="['experiment']"
@@ -96,6 +97,11 @@
                             <span>延&nbsp;伸&nbsp;阅&nbsp;读</span>
                         </div>
                     </a-menu-item>
+                    <a-menu-item key="reports">
+                        <div>
+                            <span>历&nbsp;史&nbsp;报&nbsp;告</span>
+                        </div>
+                    </a-menu-item>
                 </a-menu>
             </a-layout-sider>
             <a-layout-content>
@@ -137,10 +143,19 @@
 
 #framework .userinfo {
     position: absolute;
-    top: 20px;
+    top: 10px;
     left: 60px;
     font-size: 14px;
     color: #dada28;
+}
+
+#framework .logout {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+    font-size: 8px;
+    color: dodgerblue;
+    cursor: pointer;
 }
 
 .menu {
@@ -181,12 +196,15 @@ import VisionSystemStructural from '@/scenes/VisionSystemStructural';
 import RobotProgramming from '@/scenes/RobotProgramming';
 import Experiment from '@/scenes/Experiment';
 import Exam from '@/scenes/Exam';
+import ExperimentReports from '@/views/experimentReports';
+import { getUserInfo } from '@/miscs/auth';
+import { logout } from '@/api/login';
 
 export default {
     name: 'Home',
     data() {
         return {
-            userName: '默认用户'
+            userInfo: {}
         };
     },
     computed: {
@@ -204,6 +222,8 @@ export default {
                 return Experiment;
             } else if (scene === 'exam') {
                 return Exam;
+            } else if (scene === 'reports') {
+                return ExperimentReports;
             } else {
                 return Introduction;
             }
@@ -212,6 +232,9 @@ export default {
             return [this.$store.state.scene];
         }
     },
+    created() {
+        this.userInfo = getUserInfo();
+    },
     methods: {
         _onMenuSelect(item) {
             if (item.key.startsWith('experiment')) {
@@ -219,6 +242,16 @@ export default {
             } else {
                 this.$store.commit('changeScene', { scene: item.key, stage: null, step: null });
             }
+        },
+        _logout() {
+            logout()
+                .then(() => {
+                    this.$store.commit('changeScene', { scene: 'splash', stage: null, step: null });
+                    location.reload();
+                })
+                .catch(() => {
+                    this.$message.error('请求失败，请重试');
+                });
         }
     }
 };

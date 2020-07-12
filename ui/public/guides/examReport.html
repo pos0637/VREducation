@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title></title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .result-table {
+            width: 50%;
+        }
+
+        .result-table tr {
+            border: 1px solid #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>实验报告</h1></br>
+    <a-row>
+        <a-col :span="6">姓名</a-col>
+        <a-col :span="6">默认用户</a-col>
+        <a-col :span="6">班级</a-col>
+        <a-col :span="6">机械1班</a-col>
+    </a-row>
+    <h3>实验结果与分析</h3>
+    <table>
+
+    </table>
+    <table>
+        <th>
+            <tr>实验参数</tr>
+        </th>
+        <th>
+            <tr>曝光值</tr>
+            <tr>二值化最小值</tr>
+            <tr>二值化最大值</tr>
+            <tr>提取边缘最小值</tr>
+            <tr>提取边缘最大值</tr>
+        </th>
+        <th>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+        </th>
+    </table>
+    <table class="result-table">
+        <th>
+            <tr>推荐参数</tr>
+        </th>
+        <th>
+            <tr>曝光值</tr>
+            <tr>二值化最小值</tr>
+            <tr>二值化最大值</tr>
+            <tr>提取边缘最小值</tr>
+            <tr>提取边缘最大值</tr>
+        </th>
+        <th>
+            <tr>2000</tr>
+            <tr>50</tr>
+            <tr>100</tr>
+            <tr>30</tr>
+            <tr>50</tr>
+        </th>
+    </table>
+    <h3>实验心得</h3>
+    <textarea v-model="message2" placeholder="请输入心得体会"></textarea>
+</body>
+</html>

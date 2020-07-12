@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { getToken, removeToken } from '@/miscs/auth';
 
 Vue.use(Vuex);
 
@@ -12,7 +13,10 @@ export default new Vuex.Store({
         stage: null,
 
         // 步骤
-        step: null
+        step: null,
+
+        // 身份信息：token
+        token: getToken()
     },
     mutations: {
         /**
@@ -36,6 +40,21 @@ export default new Vuex.Store({
         changeStage(state, data) {
             state.stage = data.stage;
             state.step = data.step;
+        },
+
+        /**
+         * 设值token
+         */
+        setToken: (state, token) => {
+            state.token = token;
+        },
+
+        /**
+         * 注销
+         */
+        fedLogout() {
+            this.commit('setToken', '');
+            removeToken();
         }
     },
     actions: {},
