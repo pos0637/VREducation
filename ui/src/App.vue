@@ -21,6 +21,7 @@
 import UnityContainer from '@/components/unityContainer';
 import Splash from '@/views/Splash';
 import Home from '@/views/Home';
+import Introduce from '@/views/Introduce';
 
 export default {
     name: 'app',
@@ -30,7 +31,9 @@ export default {
     computed: {
         content() {
             const scene = this.$store.state.scene;
-            if (scene === 'splash') {
+            if (scene === 'introduce') {
+                return Introduce;
+            } else if (scene === 'splash') {
                 return Splash;
             } else {
                 return Home;

@@ -246,7 +246,7 @@ export default {
         _logout() {
             logout()
                 .then(() => {
-                    this.$store.commit('changeScene', { scene: 'splash', stage: null, step: null });
+                    this.$store.commit('changeScene', { scene: 'introduce', stage: null, step: null });
                     location.reload();
                 })
                 .catch(() => {

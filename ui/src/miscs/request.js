@@ -86,7 +86,7 @@ service.interceptors.response.use(
     error => {
         if (error.response.data.code === 401) {
             store.commit('fedLogout').then(() => {
-                store.commit('changeScene', { scene: 'splash', stage: null, step: null });
+                store.commit('changeScene', { scene: 'introduce', stage: null, step: null });
             });
         }
 
