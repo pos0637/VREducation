@@ -272,10 +272,10 @@ export default {
         _start() {
             if (this.currentExperiment === null) {
                 this.startExperiment = false;
-                this.$refs.codeEditor.startTour(0);
+                this.$refs.codeEditor.startTour(this.$store.state.stage || 0);
             } else if (this.currentExperiment < this.experiments.length) {
-                this.startExperiment = false;
-                this.$refs.codeEditor.startTour(this.currentExperiment + 1);
+                const scene = 'experiment' + (this.currentExperiment + 2);
+                this.$store.commit('changeScene', { scene: scene, stage: this.currentExperiment + 1, step: null });
             }
         },
         _restart() {
