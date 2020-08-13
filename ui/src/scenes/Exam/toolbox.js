@@ -1,26 +1,43 @@
 export const toolbox = `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-    <block type="wait_for_sensor_signal" id="wait_for_sensor_signal">
-        <field name="sensor">光电传感器</field>
+    <block type="get_altitude" id="get_altitude">
+        <field name="sensor">高度传感器</field>
     </block>
-    <block type="camera_snapshot" id="camera_snapshot"></block>
-    <block type="threshold" id="threshold"></block>
-    <block type="findcontours" id="findcontours"></block>
-    <block type="findcenter" id="findcenter"></block>
-    <block type="shapedetect" id="shapedetect"></block>
-    <block type="grab" id="grab"></block>
-    <block type="variables_set" id="variable_image_set">
-        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field>
+    <block type="proportional" id="proportional"></block>
+    <block type="integral" id="integral"></block>
+    <block type="derivative" id="derivative"></block>
+    <block type="variables_get" id="variable_altitude_get">
+        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field>
     </block>
-    <block type="variables_set" id="variable_preprocess_image_set">
-        <field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">预处理图片</field>
+    <block type="variables_set" id="variable_altitude_set">
+        <field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field>
     </block>
-    <block type="variables_set" id="variable_contour_set">
-        <field name="VAR" id="]i17utjfOMJY=.sIUx1m">边缘</field>
+    <block type="variables_get" id="variable_current_altitude_get">
+        <field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field>
     </block>
-    <block type="variables_set" id="variable_center_set">
-        <field name="VAR" id="82jjstjfOMJY=.s1123c">中心点</field>
+    <block type="variables_set" id="variable_current_altitude_set">
+        <field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field>
     </block>
-    <block type="variables_set" id="variable_sharp_set">
-        <field name="VAR" id="bgehjfOMJY=.s11o5al1">工件类型</field>
+    <block type="variables_get" id="variable_error_get">
+        <field name="VAR" id="]i17utjfOMJY=.sIUx1m">误差</field>
+    </block>
+    <block type="variables_set" id="variable_error_set">
+        <field name="VAR" id="]i17utjfOMJY=.sIUx1m">误差</field>
+    </block>
+    <block type="variables_get" id="variable_speed_get">
+        <field name="VAR" id="82jjstjfOMJY=.s0cmJz">计算结果1</field>
+    </block>
+    <block type="variables_set" id="variable_speed_set">
+        <field name="VAR" id="82jjstjfOMJY=.s0cmJz">计算结果1</field>
+    </block>
+    <block type="speed" id="speed"></block>
+    <block type="math_number">
+        <field name="NUM">0</field>
+    </block>
+    <block type="math_arithmetic">
+        <field name="OP">ADD</field>
+        <value name="A">
+        </value>
+        <value name="B">
+        </value>
     </block>
 </xml>`;

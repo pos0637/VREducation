@@ -100,7 +100,7 @@ export default {
                         this.startExperiment = true;
                     }
                 },
-                onRunCode: async () => {
+                beforeRunCode: async () => {
                     await top.window.resetScene(3);
                 }
             },

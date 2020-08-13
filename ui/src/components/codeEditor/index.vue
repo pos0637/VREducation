@@ -21,24 +21,6 @@
         <a-row type="flex" style="flex-grow: 1">
             <div id="editor" style="width: 100%; height: 100%" />
         </a-row>
-        <a-row type="flex" align="bottom" style="height: 20px; margin-top: 8px;">
-            <a-col v-for="item in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_name">
-                <div class="title-background">{{ item.name }}</div>
-            </a-col>
-        </a-row>
-        <a-row type="flex" align="bottom" style="height: 120px">
-            <a-col v-for="(item, index) in inspectorVariables" :key="item.id" :span="24 / inspectorVariables.length" class="inspector_variable_data">
-                <canvas
-                    v-if="item.id !== null"
-                    :ref="inspectorVariables[index].id"
-                    :id="inspectorVariables[index].id"
-                    :data-id="inspectorVariables[index].id"
-                    :data-name="item.name"
-                    class="inspector_variable_image"
-                    @click="_onImageInspectorClick"
-                />
-            </a-col>
-        </a-row>
         <a-modal v-model="imageInspectorVisiable" :title="imageInspectorTitle">
             <template slot="footer">
                 <span />
@@ -366,9 +348,15 @@ export default {
                 this.runFlag = true;
                 this._clearVariables();
                 this.$message.success(`开始运行`, 2);
-                this.eventHandler && this.eventHandler['onRunCode'] && (await this.eventHandler['onRunCode']());
+                this.eventHandler && this.eventHandler['beforeRunCode'] && (await this.eventHandler['beforeRunCode']());
 
-                await eval(`(async () => { ${this._generateCode()} })()`);
+                if (this.eventHandler && this.eventHandler['runCode']) {
+                    await this.eventHandler['runCode'](async () => {
+                        await eval(`(async () => { ${this._generateCode()} })()`);
+                    });
+                } else {
+                    await eval(`(async () => { ${this._generateCode()} })()`);
+                }
                 if (this.experimentMode && this.experiment !== null) {
                     if (this.experiment._step.expect && typeof this.experiment._step.expect === 'function' && (await this.experiment._step.expect())) {
                         this._onExperimentStepComplete(this.experiment);
