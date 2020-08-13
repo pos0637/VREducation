@@ -15,7 +15,14 @@
                     <CodeEditor ref="codeEditor" :blocks="blocks" :toolbox="toolbox" :inspectorVariables="inspectorVariables" :eventHandler="eventHandler" />
                 </a-col>
                 <a-col :span="8" style="height: 100%">
-                    <Docker target="UnityContainer" />
+                    <a-layout style="width: 100%; height: 100%; background-color: #292929;">
+                        <a-row style="height: 50%">
+                            <Docker target="UnityContainer" />
+                        </a-row>
+                        <a-row style="height: 50%">
+                            <Chart />
+                        </a-row>
+                    </a-layout>
                 </a-col>
             </a-row>
         </a-layout>
@@ -47,6 +54,7 @@
 import { sleep } from '@/miscs/coroutine';
 import Docker from '@/components/docker';
 import CodeEditor from '@/components/codeEditor';
+import Chart from '@/components/chart';
 import Loading from '@/components/loading';
 import { blocks } from './blocks';
 import { toolbox } from './toolbox';
@@ -57,6 +65,7 @@ export default {
     components: {
         Docker,
         CodeEditor,
+        Chart,
         Loading
     },
     data: function() {
@@ -78,8 +87,9 @@ export default {
                     for (let i = 0; i < 1000; ++i) {
                         console.debug(`run code: ${i}`);
                         await func();
-                        const points = this.charts[this.charts.length - 1].points;
-                        points.push({ x: i, y: this.altitude });
+
+                        const chart = this.charts[this.charts.length - 1];
+                        chart.points.push({ x: i, y: this.altitude });
                     }
 
                     console.debug(this.charts);
