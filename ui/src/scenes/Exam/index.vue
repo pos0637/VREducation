@@ -20,7 +20,7 @@
                             <Docker target="UnityContainer" />
                         </a-row>
                         <a-row style="height: 50%">
-                            <Chart />
+                            <Chart ref="chart" :charts="this.charts" />
                         </a-row>
                     </a-layout>
                 </a-col>
@@ -84,15 +84,17 @@ export default {
                     await top.window.resetScene(3);
                 },
                 runCode: async func => {
-                    for (let i = 0; i < 1000; ++i) {
+                    const chart = this.charts[this.charts.length - 1];
+                    const type = `第${this.charts.length}次测试`;
+
+                    for (let i = 0; i < 300; ++i) {
                         console.debug(`run code: ${i}`);
                         await func();
-
-                        const chart = this.charts[this.charts.length - 1];
-                        chart.points.push({ x: i, y: this.altitude });
+                        chart.points.push({ x: i, y: this.altitude, type: type });
                     }
 
                     console.debug(this.charts);
+                    this.$refs.chart.refreash(this.charts);
                 }
             },
             loading: true,
@@ -108,7 +110,13 @@ export default {
     },
     mounted() {
         top.window.get_altitude = async () => {
-            return this.altitude;
+            let altitude = this.altitude - Math.round(Math.random() * 3);
+            if (altitude < 0) {
+                altitude = 0;
+            }
+
+            this.altitude = altitude;
+            return altitude;
         };
 
         top.window.proportional = async proportional_value => {

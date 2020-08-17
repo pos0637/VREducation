@@ -22,33 +22,39 @@ export default {
     },
     data: function() {
         return {
-            chart: null
+            chart: null,
+            points: []
         };
     },
     mounted() {
+        this._generatePoints(this.charts);
         this._showCharts();
         this._onResize();
     },
     methods: {
+        refreash(charts) {
+            this._generatePoints(charts);
+            this._showCharts();
+        },
+        _generatePoints(charts) {
+            let points = [];
+            for (const chart of charts) {
+                points = points.concat(chart.points);
+            }
+
+            this.points = points;
+        },
         _showCharts() {
             this.chart = new F2.Chart({
                 el: this.$refs.canvas,
                 pixelRatio: window.devicePixelRatio
             });
 
-            const data = [
-                { genre: 'Sports', sold: 275 },
-                { genre: 'Strategy', sold: 115 },
-                { genre: 'Action', sold: 120 },
-                { genre: 'Shooter', sold: 350 },
-                { genre: 'Other', sold: 150 }
-            ];
-
-            this.chart.source(data);
+            this.chart.source(this.points);
             this.chart
-                .interval()
-                .position('genre*sold')
-                .color('genre');
+                .line()
+                .position('x*y')
+                .color('type');
             this.chart.render();
         },
         _onResize() {

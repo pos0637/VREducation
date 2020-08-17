@@ -14,6 +14,7 @@ module.exports = {
         config.entry('main').add('babel-polyfill');
     },
     configureWebpack: {
+        devtool: 'source-map',
         resolve: {
             alias: {
                 '@': resolve('src')
