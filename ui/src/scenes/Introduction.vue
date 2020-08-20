@@ -48,7 +48,8 @@ export default {
                 sources: [
                     {
                         type: 'video/mp4',
-                        src: 'http://qiniu3.shangyunsoft.com/introduction.mp4'
+                        src: require('../assets/introduction.mp4')
+                        // src: 'http://qiniu3.shangyunsoft.com/introduction.mp4'
                     }
                 ]
             }

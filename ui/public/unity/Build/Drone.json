@@ -1,0 +1,20 @@
+{
+"companyName": "ddc",
+"productName": "SimulationDemo",
+"productVersion": "0.1",
+"dataUrl": "Drone.data.unityweb",
+"wasmCodeUrl": "Drone.wasm.code.unityweb",
+"wasmFrameworkUrl": "Drone.wasm.framework.unityweb",
+"asmCodeUrl": "Drone.asm.code.unityweb",
+"asmMemoryUrl": "Drone.asm.memory.unityweb",
+"asmFrameworkUrl": "Drone.asm.framework.unityweb",
+"TOTAL_MEMORY": 268435456,
+"graphicsAPI": ["WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.3.2f1"
+}

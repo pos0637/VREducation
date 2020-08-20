@@ -6,7 +6,7 @@
             </div>
         </a-layout-header>
         <a-layout class="layout">
-            <a-layout-sider>
+            <a-layout-sider style="overflow-y: scroll; height:100%;">
                 <img src="@/assets/user.png" style="width:65px; float:left" />
                 <span class="userinfo">{{ this.userInfo.realname ? this.userInfo.realname : '默认用户' }}</span>
                 <span class="logout"><a href="javascrip:void(0);" @click="_logout">退出登录</a></span>
@@ -112,6 +112,9 @@
 </template>
 
 <style>
+::-webkit-scrollbar {
+    display: none;
+}
 #framework {
     width: 100%;
     height: 100%;

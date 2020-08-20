@@ -81,7 +81,7 @@
         </a-layout-content>
         <a-layout-footer style="background: #1c1717;opacity: 60%;">
             <div class="progress">
-                <span style="font-size: 1.6rem; color: white;">{{ markedWords }}</span>
+                <span style="font-size: 1.1rem; color: white;">{{ markedWords }}</span>
                 <a-progress
                     :stroke-color="{
                         '0%': '#108ee9',
@@ -90,10 +90,11 @@
                     :percent="progress"
                 />
             </div>
-            <span style="color: white;font-size: 18px;">
-                本实验基于最新的HTML5和WebGL技术开发，使用虚拟3D场景构建。建议使用Microsoft edge、Firefox、Google Chrome等浏览器访问<br />
-                如使用其他谷歌内核的浏览器（如360、QQ、UC、猎豹、遨游等）请务必切换成极速模式，去掉鼠标手势，开启硬件加速。如遇到加载至99%长时间不进入实验的情况，请清除浏览器缓存，重新加载。
-                如对实验资源还有其他疑问，请联系13045977553（林耶海工程师）18059143209（李老师）
+            <span style="color: white;font-size: 13px;">
+                本实验基于最新的HTML5和WebGL技术开发，使用虚拟3D场景构建。建议使用Microsoft edge、Firefox、Google Chrome等浏览器访问。<br />
+                如果使用其他谷歌内核的浏览器（如360、QQ、UC、猎豹、遨游等）请务必切换成极速模式，去掉鼠标手势，开启硬件加速。<br />
+                如果遇到加载至99%长时间不进入实验的情况，请清除浏览器缓存，重新加载。<br />
+                如果对实验资源还有其他疑问，请联系13045977553（林耶海工程师）18059143209（李老师）
             </span>
         </a-layout-footer>
     </a-layout>
@@ -162,6 +163,7 @@
 
 .ant-layout-footer {
     background: none;
+    padding: 15px 50px;
 }
 </style>
 
