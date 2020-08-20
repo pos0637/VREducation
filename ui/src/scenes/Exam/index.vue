@@ -11,10 +11,10 @@
                 </a-col>
             </a-row>
             <a-row style="height: 100%">
-                <a-col :span="16" class="codeEditor">
+                <a-col :span="14" class="codeEditor">
                     <CodeEditor ref="codeEditor" :blocks="blocks" :toolbox="toolbox" :inspectorVariables="inspectorVariables" :eventHandler="eventHandler" />
                 </a-col>
-                <a-col :span="8" style="height: 100%">
+                <a-col :span="10" style="height: 100%">
                     <Docker target="UnityContainer" />
                 </a-col>
             </a-row>

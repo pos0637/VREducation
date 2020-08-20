@@ -48,7 +48,7 @@ export default {
                 sources: [
                     {
                         type: 'video/mp4',
-                        src: 'http://qblk2bgoy.bkt.clouddn.com/introduction.mp4'
+                        src: 'http://qiniu3.shangyunsoft.com/introduction.mp4'
                     }
                 ]
             }
