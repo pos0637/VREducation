@@ -1,7 +1,7 @@
 <template>
-    <a-layout class="container" style="background-image: url(splash/images/loginBackground.jpg)">
+    <a-layout class="container" style="background-image: url(splash/images/22.jpg)">
         <div class="header">
-            <img src="splash/images/title.png" style="width: 830px;margin-top: -10px;" />
+            <img src="splash/images/title1.png" style="width: 700px;" />
         </div>
         <a-layout-content type="flex" class="content">
             <a-form :form="form" class="user-layout-login login_div" ref="formLogin" id="formLogin" style="background-image: url(splash/images/border.png);">
@@ -79,7 +79,7 @@
                 </a-col>
             </a-form>
         </a-layout-content>
-        <a-layout-footer>
+        <a-layout-footer style="background: #1c1717;opacity: 60%;">
             <div class="progress">
                 <span style="font-size: 1.6rem; color: white;">{{ markedWords }}</span>
                 <a-progress
@@ -89,6 +89,11 @@
                     }"
                     :percent="progress"
                 />
+                <span style="color: white ;font-size: 18px"
+                    >本实验基于最新的HTML5和WebGL技术开发，使用虚拟3D场景构建。建议使用Microsoft edge、Firefox、Google Chrome等浏览器访问<br />
+                    如使用其他谷歌内核的浏览器（如360、QQ、UC、猎豹、遨游等）请务必切换成极速模式，去掉鼠标手势，开启硬件加速。如遇到加载至99%长时间不进入实验的情况，请清除浏览器缓存，重新加载。
+                    如对实验资源还有其他疑问，请联系13045977553（林耶海工程师）18059143209（李老师）</span
+                >
             </div>
         </a-layout-footer>
     </a-layout>
@@ -98,6 +103,7 @@
 .content {
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
 }
 .login_div {
     text-align: center;

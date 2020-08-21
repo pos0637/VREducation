@@ -1,9 +1,9 @@
 <template>
     <div class="content">
-        <a-layout style="width: 100%; height: 100%; background-color: #292929;">
+        <a-layout style="width: 100%; height: 100%; background-color: #fff;">
             <a-row style="padding: 8px;">
                 <a-col :span="12" style="text-align: left">
-                    <span style="font-size: 1.4rem; color: white;">视觉抓取实验</span>
+                    <span style="font-size: 1.4rem; color: black;">无人机实验</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
                     <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
@@ -50,7 +50,7 @@
 </style>
 
 <script>
-import { sleep } from '@/miscs/coroutine';
+// import { sleep } from '@/miscs/coroutine';
 import Docker from '@/components/docker';
 import CodeEditor from '@/components/codeEditor';
 import Loading from '@/components/loading';
@@ -101,7 +101,7 @@ export default {
                     }
                 },
                 beforeRunCode: async () => {
-                    await top.window.resetScene(3);
+                    // await top.window.resetScene(3);
                 }
             },
             currentExperiment: null,
@@ -114,129 +114,129 @@ export default {
         };
     },
     mounted() {
-        let signal = false;
-        top.window.onSignal = () => {
-            console.debug('onSignal');
-            signal = true;
-        };
+        // let signal = false;
+        // top.window.onSignal = () => {
+        //     console.debug('onSignal');
+        //     signal = true;
+        // };
 
-        top.window.wait_for_sensor_signal = async () => {
-            while (this.runFlag && !signal) {
-                await sleep(1000);
-            }
+        // top.window.wait_for_sensor_signal = async () => {
+        //     while (this.runFlag && !signal) {
+        //         await sleep(1000);
+        //     }
 
-            signal = false;
-        };
+        //     signal = false;
+        // };
 
-        let image = false;
-        top.window.onSnapshot = (sender, data) => {
-            console.debug('onSnapshot');
-            document.getElementById('experiment_image').src = 'data:image/png;base64,' + data;
-            image = true;
-        };
+        // let image = false;
+        // top.window.onSnapshot = (sender, data) => {
+        //     console.debug('onSnapshot');
+        //     document.getElementById('experiment_image').src = 'data:image/png;base64,' + data;
+        //     image = true;
+        // };
 
-        top.window.camera_snapshot = async exposure => {
-            this.gameInstance.SendMessage('UintyConnectJS', 'Snapshot', (exposure / 10000).toString());
-            while (this.runFlag && !image) {
-                await sleep(1000);
-            }
+        // top.window.camera_snapshot = async exposure => {
+        //     this.gameInstance.SendMessage('UintyConnectJS', 'Snapshot', (exposure / 10000).toString());
+        //     while (this.runFlag && !image) {
+        //         await sleep(1000);
+        //     }
 
-            image = false;
-            // eslint-disable-next-line no-undef
-            const mat = cv.imread('experiment_image');
-            this.$refs.codeEditor.setVariable('inspector_variable_image1', mat);
-            return mat;
-        };
+        //     image = false;
+        //     // eslint-disable-next-line no-undef
+        //     const mat = cv.imread('experiment_image');
+        //     this.$refs.codeEditor.setVariable('inspector_variable_image1', mat);
+        //     return mat;
+        // };
 
-        top.window.threshold = async (image, min, max) => {
-            const dst = image.clone();
-            // eslint-disable-next-line no-undef
-            cv.cvtColor(dst, dst, cv.COLOR_BGR2GRAY);
-            // eslint-disable-next-line no-undef
-            cv.threshold(dst, dst, min, max, cv.THRESH_BINARY);
-            this.$refs.codeEditor.setVariable('inspector_variable_image2', dst);
-            return dst;
-        };
+        // top.window.threshold = async (image, min, max) => {
+        //     const dst = image.clone();
+        //     // eslint-disable-next-line no-undef
+        //     cv.cvtColor(dst, dst, cv.COLOR_BGR2GRAY);
+        //     // eslint-disable-next-line no-undef
+        //     cv.threshold(dst, dst, min, max, cv.THRESH_BINARY);
+        //     this.$refs.codeEditor.setVariable('inspector_variable_image2', dst);
+        //     return dst;
+        // };
 
-        top.window.findcontours = async (image, min, max) => {
-            const edges = image.clone();
-            // eslint-disable-next-line no-undef
-            cv.Canny(image, edges, min, max, 3);
-            // eslint-disable-next-line no-undef
-            let contours = new cv.MatVector();
-            // eslint-disable-next-line no-undef
-            let hierarchy = new cv.Mat();
-            // eslint-disable-next-line no-undef
-            cv.findContours(image, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
-            // eslint-disable-next-line no-undef
-            const dst = image.clone();
-            // eslint-disable-next-line no-undef
-            cv.cvtColor(dst, dst, cv.COLOR_GRAY2BGR);
-            // eslint-disable-next-line no-undef
-            cv.drawContours(dst, contours, -1, [0, 255, 0, 255], 2);
-            this.$refs.codeEditor.setVariable('inspector_variable_image3', dst);
-            return contours;
-        };
+        // top.window.findcontours = async (image, min, max) => {
+        //     const edges = image.clone();
+        //     // eslint-disable-next-line no-undef
+        //     cv.Canny(image, edges, min, max, 3);
+        //     // eslint-disable-next-line no-undef
+        //     let contours = new cv.MatVector();
+        //     // eslint-disable-next-line no-undef
+        //     let hierarchy = new cv.Mat();
+        //     // eslint-disable-next-line no-undef
+        //     cv.findContours(image, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+        //     // eslint-disable-next-line no-undef
+        //     const dst = image.clone();
+        //     // eslint-disable-next-line no-undef
+        //     cv.cvtColor(dst, dst, cv.COLOR_GRAY2BGR);
+        //     // eslint-disable-next-line no-undef
+        //     cv.drawContours(dst, contours, -1, [0, 255, 0, 255], 2);
+        //     this.$refs.codeEditor.setVariable('inspector_variable_image3', dst);
+        //     return contours;
+        // };
 
-        top.window.findcenter = async (contours, image) => {
-            const dst = image.clone();
-            // eslint-disable-next-line no-undef
-            const moments = cv.moments(contours.get(0));
-            // eslint-disable-next-line no-undef
-            const epsilon = 0.01 * cv.arcLength(contours.get(0), true);
-            // eslint-disable-next-line no-undef
-            const approx = new cv.Mat();
-            // eslint-disable-next-line no-undef
-            cv.approxPolyDP(contours.get(0), approx, epsilon, true);
-            // eslint-disable-next-line no-undef
-            const rect = cv.minAreaRect(approx);
-            const center = { x: parseInt(moments.m10 / moments.m00), y: parseInt(moments.m01 / moments.m00), angle: rect.angle.toFixed(1) };
+        // top.window.findcenter = async (contours, image) => {
+        //     const dst = image.clone();
+        //     // eslint-disable-next-line no-undef
+        //     const moments = cv.moments(contours.get(0));
+        //     // eslint-disable-next-line no-undef
+        //     const epsilon = 0.01 * cv.arcLength(contours.get(0), true);
+        //     // eslint-disable-next-line no-undef
+        //     const approx = new cv.Mat();
+        //     // eslint-disable-next-line no-undef
+        //     cv.approxPolyDP(contours.get(0), approx, epsilon, true);
+        //     // eslint-disable-next-line no-undef
+        //     const rect = cv.minAreaRect(approx);
+        //     const center = { x: parseInt(moments.m10 / moments.m00), y: parseInt(moments.m01 / moments.m00), angle: rect.angle.toFixed(1) };
 
-            let startPoint = { x: center.x - 10, y: center.y };
-            let endPoint = { x: center.x + 10, y: center.y };
-            // eslint-disable-next-line no-undef
-            cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
-            startPoint = { x: center.x, y: center.y - 10 };
-            endPoint = { x: center.x, y: center.y + 10 };
-            // eslint-disable-next-line no-undef
-            cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
-            // eslint-disable-next-line no-undef
-            cv.putText(dst, `x: ${center.x}, y: ${center.y}, angle: ${center.angle}`, startPoint, cv.FONT_HERSHEY_SIMPLEX, 1, [255, 0, 0, 255]);
-            this.$refs.codeEditor.setVariable('inspector_variable_image4', dst);
-            return center;
-        };
+        //     let startPoint = { x: center.x - 10, y: center.y };
+        //     let endPoint = { x: center.x + 10, y: center.y };
+        //     // eslint-disable-next-line no-undef
+        //     cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
+        //     startPoint = { x: center.x, y: center.y - 10 };
+        //     endPoint = { x: center.x, y: center.y + 10 };
+        //     // eslint-disable-next-line no-undef
+        //     cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
+        //     // eslint-disable-next-line no-undef
+        //     cv.putText(dst, `x: ${center.x}, y: ${center.y}, angle: ${center.angle}`, startPoint, cv.FONT_HERSHEY_SIMPLEX, 1, [255, 0, 0, 255]);
+        //     this.$refs.codeEditor.setVariable('inspector_variable_image4', dst);
+        //     return center;
+        // };
 
-        top.window.shapedetect = async (contours, image) => {
-            const dst = image.clone();
-            // eslint-disable-next-line no-undef
-            const moments = cv.moments(contours.get(0));
-            // eslint-disable-next-line no-undef
-            const epsilon = 0.01 * cv.arcLength(contours.get(0), true);
-            // eslint-disable-next-line no-undef
-            const approx = new cv.Mat();
-            // eslint-disable-next-line no-undef
-            cv.approxPolyDP(contours.get(0), approx, epsilon, true);
-            const center = { x: parseInt(moments.m10 / moments.m00), y: parseInt(moments.m01 / moments.m00) };
-            // eslint-disable-next-line no-undef
-            cv.putText(dst, `sharp: ${approx.rows}`, center, cv.FONT_HERSHEY_SIMPLEX, 1, [0, 0, 255, 255]);
-            this.$refs.codeEditor.setVariable('inspector_variable_image5', dst);
-            return approx.rows;
-        };
+        // top.window.shapedetect = async (contours, image) => {
+        //     const dst = image.clone();
+        //     // eslint-disable-next-line no-undef
+        //     const moments = cv.moments(contours.get(0));
+        //     // eslint-disable-next-line no-undef
+        //     const epsilon = 0.01 * cv.arcLength(contours.get(0), true);
+        //     // eslint-disable-next-line no-undef
+        //     const approx = new cv.Mat();
+        //     // eslint-disable-next-line no-undef
+        //     cv.approxPolyDP(contours.get(0), approx, epsilon, true);
+        //     const center = { x: parseInt(moments.m10 / moments.m00), y: parseInt(moments.m01 / moments.m00) };
+        //     // eslint-disable-next-line no-undef
+        //     cv.putText(dst, `sharp: ${approx.rows}`, center, cv.FONT_HERSHEY_SIMPLEX, 1, [0, 0, 255, 255]);
+        //     this.$refs.codeEditor.setVariable('inspector_variable_image5', dst);
+        //     return approx.rows;
+        // };
 
-        top.window.grab = async (sharp, center) => {
-            console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
-            this.gameInstance.SendMessage('UintyConnectJS', 'Grab', `${center.x}:${center.y}`);
-        };
+        // top.window.grab = async (sharp, center) => {
+        //     console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
+        //     this.gameInstance.SendMessage('UintyConnectJS', 'Grab', `${center.x}:${center.y}`);
+        // };
 
-        let initialized = false;
-        top.window.resetScene = async id => {
-            this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', id);
-            while (this.runFlag && !initialized) {
-                await sleep(1000);
-            }
+        // let initialized = false;
+        // top.window.resetScene = async id => {
+        //     this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', id);
+        //     while (this.runFlag && !initialized) {
+        //         await sleep(1000);
+        //     }
 
-            initialized = false;
-        };
+        //     initialized = false;
+        // };
 
         top.window.onUnityInitialized = () => {
             this.loading = false;
@@ -246,14 +246,14 @@ export default {
             } else {
                 setTimeout(() => {
                     console.debug('StartScene');
-                    this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
-                    initialized = true;
+                    this.gameInstance.SendMessage('DontDestory', 'ReplaceScene', 1);
+                    // initialized = true;
                 }, 1);
             }
         };
 
         this.gameInstance = top.window.gameInstance;
-        this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
+        this.gameInstance.SendMessage('DontDestory', 'ReplaceScene', 1);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;

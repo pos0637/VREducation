@@ -2,11 +2,11 @@
     <a-layout id="framework" class="layout">
         <a-layout-header>
             <div class="header-line">
-                <img src="@/assets/ding.png" style="height: 48px; margin-left: 15%" />
+                <img src="@/assets/ding1.png" style="height: 48px; margin-left: 15%" />
             </div>
         </a-layout-header>
         <a-layout class="layout">
-            <a-layout-sider>
+            <a-layout-sider style="background-color: #fff;">
                 <img src="@/assets/user.png" style="width:65px; float:left" />
                 <span class="userinfo">{{ this.userInfo.realname ? this.userInfo.realname : '默认用户' }}</span>
                 <span class="logout"><a href="javascrip:void(0);" @click="_logout">退出登录</a></span>
@@ -16,7 +16,7 @@
                     :selectedKeys="selectedKeys"
                     class="menu"
                     mode="inline"
-                    theme="dark"
+                    theme="light"
                     style="background:#292929; font-size: 18px;"
                     @select="_onMenuSelect"
                 >
@@ -27,20 +27,15 @@
                     </a-menu-item>
                     <a-menu-item key="robotStructural">
                         <div>
-                            <span>机器人结构简介</span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item key="robotProgramming">
-                        <div>
-                            <span>机器人示教原理</span>
+                            <span>无人机结构简介</span>
                         </div>
                     </a-menu-item>
                     <a-menu-item key="visionSystemStructural">
                         <div>
-                            <span>视觉工作站拆装</span>
+                            <span>无人机拆装</span>
                         </div>
                     </a-menu-item>
-                    <a-sub-menu key="experiment" title="视觉抓取实验">
+                    <a-sub-menu key="experiment" title="无人机实验">
                         <a-menu-item key="experiment1">
                             <div>
                                 <span>图像采集实验</span>
@@ -122,14 +117,14 @@
     text-align: left;
     line-height: 24px;
     position: relative;
-    background: #292929;
+    background: #ffffff;
     color: #fff;
     padding: 0;
 }
 
 #framework .header-line {
     height: 24px;
-    border-bottom: 2px solid #a7a726;
+    border-bottom: 2px solid #bbbb1f;
 }
 
 #framework .ant-layout-sider {
@@ -164,7 +159,7 @@
 }
 
 .menu li {
-    background-color: #292929 !important;
+    background-color: #ffffff !important;
     margin-top: 20px;
     height: auto !important;
 }
@@ -174,7 +169,7 @@
 }
 
 .ant-menu {
-    background-color: #292929 !important;
+    background-color: #ffffff !important;
 }
 
 .ant-menu-dark .ant-menu-inline.ant-menu-sub {
@@ -185,7 +180,7 @@
     width: 100%;
     height: 100%;
     padding-top: 26px;
-    background-color: #292929;
+    background-color: #ffffff;
 }
 </style>
 

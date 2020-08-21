@@ -1,0 +1,20 @@
+{
+"companyName": "ddc",
+"productName": "SimulationDemo",
+"productVersion": "0.1",
+"dataUrl": "zy.data.unityweb",
+"wasmCodeUrl": "zy.wasm.code.unityweb",
+"wasmFrameworkUrl": "zy.wasm.framework.unityweb",
+"asmCodeUrl": "zy.asm.code.unityweb",
+"asmMemoryUrl": "zy.asm.memory.unityweb",
+"asmFrameworkUrl": "zy.asm.framework.unityweb",
+"TOTAL_MEMORY": 268435456,
+"graphicsAPI": ["WebGL 2.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.3.2f1"
+}

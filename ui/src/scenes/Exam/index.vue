@@ -1,9 +1,9 @@
 <template>
     <div class="content">
-        <a-layout style="width: 100%; height: 100%; background-color: #292929;">
+        <a-layout style="width: 100%; height: 100%; background-color: #fff;">
             <a-row style="padding: 8px;">
                 <a-col :span="12" style="text-align: left">
-                    <span style="font-size: 1.4rem; color: white;">实验考核</span>
+                    <span style="font-size: 1.4rem; color: black;">实验考核</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
                     <a-button data-id="exam_button" type="primary" icon="question" style="margin-left: 8px" @click="_commit">提交实验考核结果</a-button>
@@ -15,12 +15,12 @@
                     <CodeEditor ref="codeEditor" :blocks="blocks" :toolbox="toolbox" :inspectorVariables="inspectorVariables" :eventHandler="eventHandler" />
                 </a-col>
                 <a-col :span="8" style="height: 100%">
-                    <a-layout style="width: 100%; height: 100%; background-color: #292929;">
+                    <a-layout style="width: 100%; height: 100%;">
                         <a-row style="height: 50%">
                             <Docker target="UnityContainer" />
                         </a-row>
                         <a-row style="height: 50%">
-                            <Chart ref="chart" :charts="this.charts" />
+                            <Echarts :lineData="lineData" />
                         </a-row>
                     </a-layout>
                 </a-col>
@@ -54,8 +54,8 @@
 import { sleep } from '@/miscs/coroutine';
 import Docker from '@/components/docker';
 import CodeEditor from '@/components/codeEditor';
-import Chart from '@/components/chart';
 import Loading from '@/components/loading';
+import Echarts from '@/components/echart';
 import { blocks } from './blocks';
 import { toolbox } from './toolbox';
 import { buildSteps } from './tours';
@@ -65,14 +65,15 @@ export default {
     components: {
         Docker,
         CodeEditor,
-        Chart,
-        Loading
+        Loading,
+        Echarts
     },
     data: function() {
         return {
             blocks: blocks,
             toolbox: toolbox,
             inspectorVariables: [],
+            lineData: [],
             eventHandler: {
                 beforeRunCode: async () => {
                     this.altitude = 0.0;
@@ -80,21 +81,32 @@ export default {
                     this.iterm = 0.0;
                     this.dterm = 0.0;
                     this.lastError = 0.0;
-                    this.charts.push({ name: 'chart1', color: 'blue', points: [] });
-                    await top.window.resetScene(3);
                 },
                 runCode: async func => {
-                    const chart = this.charts[this.charts.length - 1];
-                    const type = `第${this.charts.length}次测试`;
-
+                    this.testNum++;
+                    const point = [];
                     for (let i = 0; i < 300; ++i) {
                         console.debug(`run code: ${i}`);
                         await func();
-                        chart.points.push({ x: i, y: this.altitude, type: type });
+                        point.push([i, this.altitude]);
                     }
 
-                    console.debug(this.charts);
-                    this.$refs.chart.refreash(this.charts);
+                    const data = {
+                        name: `第${this.testNum}次测试`,
+                        point: point
+                    };
+
+                    const lineData = this.lineData;
+                    if (lineData.length == 3) {
+                        lineData.splice(0, 1);
+                    }
+                    lineData.push(data);
+
+                    this.lineData = lineData;
+                    // TODO:
+                    this.gameInstance.SendMessage('DontDestory', 'UpdateTarget', 30);
+                    this.gameInstance.SendMessage('DontDestory', 'ShowAni', 2);
+                    this.gameInstance.SendMessage('DontDestory', 'StartScence', 1);
                 }
             },
             loading: true,
@@ -105,7 +117,7 @@ export default {
             iterm: 0.0,
             dterm: 0.0,
             lastError: 0.0,
-            charts: []
+            testNum: 0
         };
     },
     mounted() {
@@ -141,7 +153,7 @@ export default {
 
         let initialized = false;
         top.window.resetScene = async id => {
-            this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', id);
+            this.gameInstance.SendMessage('DontDestory', 'SetScence', id);
             while (this.runFlag && !initialized) {
                 await sleep(1000);
             }
@@ -149,7 +161,7 @@ export default {
             initialized = false;
         };
 
-        top.window.onUnityInitialized = () => {
+        top.window.onUnityInitialized = () => {            
             this.loading = false;
             if (!this.runFlag) {
                 this.runFlag = true;
@@ -171,14 +183,14 @@ export default {
             } else {
                 setTimeout(() => {
                     console.debug('StartScene');
-                    this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                    this.gameInstance.SendMessage('DontDestory', 'StartScence', 1);
                     initialized = true;
                 }, 1);
             }
         };
 
         this.gameInstance = top.window.gameInstance;
-        this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
+        this.gameInstance.SendMessage('DontDestory', 'ReplaceScene', 1);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;
