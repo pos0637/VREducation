@@ -60,11 +60,11 @@ export default {
         const gameInstance = top.window.gameInstance;
         top.window.onUnityInitialized = () => {
             setTimeout(() => {
-                gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                gameInstance.SendMessage('DontDestory', 'StartScence', 1);
             }, 1);
         };
 
-        gameInstance.SendMessage('UintyConnectJS', 'SetScene', 2);
+        gameInstance.SendMessage('DontDestory', 'ReplaceScene', 2);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;

@@ -30,10 +30,10 @@ export const toolbox = `<xml xmlns="https://developers.google.com/blockly/xml" i
         <field name="VAR" id="82jjstjfOMJY=.s0cmJz">计算结果1</field>
     </block>
     <block type="speed" id="speed"></block>
-    <block type="math_number">
+    <block type="math_number" id="math_number">
         <field name="NUM">0</field>
     </block>
-    <block type="math_arithmetic">
+    <block type="math_arithmetic" id="math_arithmetic">
         <field name="OP">ADD</field>
         <value name="A">
         </value>

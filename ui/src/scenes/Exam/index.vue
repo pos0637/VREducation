@@ -161,7 +161,7 @@ export default {
             initialized = false;
         };
 
-        top.window.onUnityInitialized = () => {            
+        top.window.onUnityInitialized = () => {
             this.loading = false;
             if (!this.runFlag) {
                 this.runFlag = true;

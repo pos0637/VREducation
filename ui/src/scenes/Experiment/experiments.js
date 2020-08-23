@@ -1,270 +1,151 @@
-import { sleep } from '@/miscs/coroutine';
-
-export function buildExperiments(sender) {
+export function buildExperiments() {
     return [
         {
-            name: '图像采集实验',
+            name: '上升速度控制实验',
             steps: [
                 {
                     name: 'step1',
-                    intro: '拖拽 等待传感器信号 功能块进入编程界面',
-                    blocks: ['wait_for_sensor_signal'],
+                    intro: '拖拽 设置转速 功能块进入编程界面, 并设置转速为0.7',
+                    blocks: ['speed', 'math_number'],
                     workspace: '<xml></xml>',
                     expect:
-                        '<xml><block type="wait_for_sensor_signal" id="ujxLqORLSTv~h}xDbbEo" x="50" y="110"><field name="sensor">光电传感器</field></block></xml>'
+                        '<xml><block type="speed" id="WUiqVfX^Biv9n`?`.}c$" x="150" y="230"><value name="speed"><block type="math_number" id="U!7}$rIkV@Wp5(wK~lH|"><field name="NUM">0.7</field></block></value></block></xml>'
                 },
                 {
                     name: 'step2',
-                    intro: '拖拽 设置图片 功能块进入编程界面, 并与 等待传感器信号 功能块连接',
-                    blocks: ['variable_image_set'],
+                    intro: '点击 运行 按钮, 观察三维仿真与实时曲线中的实验结果',
+                    buttons: ['run_button'],
+                    expect: async () => {
+                        return true;
+                    }
+                }
+            ]
+        },
+        {
+            name: '比例控制实验',
+            steps: [
+                {
+                    name: 'step1',
+                    intro: '拖拽 设置预期高度 功能块进入编程界面, 并设置预期高度为50',
+                    blocks: ['variable_altitude_set', 'math_number'],
+                    workspace: '<xml></xml>',
                     expect:
-                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="?-d2,=9U[aKnRjqbr++i" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="nPZ`r~|}63pU]CikFm#4"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field></block></next></block></xml>'
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable></variables><block type="variables_set" id="|r@pVg;tos#m0q0ru=OC" x="230" y="170"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id=";u.Ffzln:H@?h_;?v,J/"><field name="NUM">50</field></block></value></block></xml>'
+                },
+                {
+                    name: 'step2',
+                    intro: '拖拽 设置当前高度 功能块进入编程界面, 拖拽 获取高度传感器数据 功能块进入编程界面, 并与 设置当前高度 功能块连接',
+                    blocks: ['variable_current_altitude_set', 'get_altitude'],
+                    expect:
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable></variables><block type="variables_set" id=".[q,R,#:Xz:C3DK17a%N" x="170" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="x#q-r+aLykd.VW.HAvR4"><field name="NUM">50</field></block></value><next><block type="variables_set" id="^2oy5-,,mBR=#``Nej+8"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="~}/d08rIoqBqW#;_-q%#"><field name="sensor">高度传感器</field></block></value></block></next></block></xml>'
                 },
                 {
                     name: 'step3',
-                    intro: '拖拽 相机拍照 功能块进入编程界面, 并与 设置图片 功能块连接',
-                    blocks: ['camera_snapshot'],
+                    intro: '拖拽 设置误差 功能块进入编程界面, 误差为 预期高度 - 当前高度',
+                    blocks: ['variable_error_set', 'math_arithmetic', 'variable_altitude_get', 'variable_current_altitude_get'],
                     expect:
-                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">10000</field></block></value></block></next></block></xml>'
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="YN=HD(iBZFpAKW%91M=l">误差</variable></variables><block type="variables_set" id=".[q,R,#:Xz:C3DK17a%N" x="170" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="x#q-r+aLykd.VW.HAvR4"><field name="NUM">50</field></block></value><next><block type="variables_set" id="^2oy5-,,mBR=#``Nej+8"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="~}/d08rIoqBqW#;_-q%#"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="zy7fF9D1=~|Wf5``@9.%"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field><value name="VALUE"><block type="math_arithmetic" id="CrBhFYO1^`61q,{$,MM/"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="VtA2~Qc3vibH8:QCN*;%"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="*Htq{Ek5gs10@*`OvbP!"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value></block></next></block></next></block></xml>'
                 },
                 {
                     name: 'step4',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                    intro: '拖拽 设置转速 功能块进入编程界面, 拖拽 比例计算 功能块进入编程界面, 并与 误差 功能块相乘, 将结果与 设置转速 功能块连接',
+                    blocks: ['speed', 'math_arithmetic', 'proportional', 'variable_error_get'],
+                    expect:
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="YN=HD(iBZFpAKW%91M=l">误差</variable></variables><block type="variables_set" id=".[q,R,#:Xz:C3DK17a%N" x="170" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="x#q-r+aLykd.VW.HAvR4"><field name="NUM">50</field></block></value><next><block type="variables_set" id="^2oy5-,,mBR=#``Nej+8"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="~}/d08rIoqBqW#;_-q%#"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="zy7fF9D1=~|Wf5``@9.%"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field><value name="VALUE"><block type="math_arithmetic" id="CrBhFYO1^`61q,{$,MM/"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="VtA2~Qc3vibH8:QCN*;%"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="*Htq{Ek5gs10@*`OvbP!"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id=".hUHi}up+oR_KZcpz[$t"><value name="speed"><block type="math_arithmetic" id="P.w5qrn.?3ng[S.3%{P;"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="tuW!CeiApNVj!9F/Oz3="><field name="proportional_value">0.1</field></block></value><value name="B"><block type="variables_get" id="jetCUfq~}?184C!6_X=`"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field></block></value></block></value></block></next></block></next></block></next></block></xml>'
+                },
+                {
+                    name: 'step5',
+                    intro: '点击 运行 按钮, 观察三维仿真与实时曲线中的实验结果',
                     buttons: ['run_button'],
                     expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image1') === 'undefined') {
-                            await sleep(1000);
-                        }
-
                         return true;
                     }
                 }
             ]
         },
         {
-            name: '工业相机曝光度实验',
+            name: '稳态误差调节实验',
             steps: [
                 {
                     name: 'step1',
-                    intro: '设置 相机拍照 功能块曝光值为2000',
+                    intro: '设置 比例控制 功能块参数为0.3',
                     workspace:
-                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">10000</field></block></value></block></next></block></xml>',
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="YN=HD(iBZFpAKW%91M=l">误差</variable></variables><block type="variables_set" id=".[q,R,#:Xz:C3DK17a%N" x="170" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="x#q-r+aLykd.VW.HAvR4"><field name="NUM">50</field></block></value><next><block type="variables_set" id="^2oy5-,,mBR=#``Nej+8"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="~}/d08rIoqBqW#;_-q%#"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="zy7fF9D1=~|Wf5``@9.%"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field><value name="VALUE"><block type="math_arithmetic" id="CrBhFYO1^`61q,{$,MM/"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="VtA2~Qc3vibH8:QCN*;%"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="*Htq{Ek5gs10@*`OvbP!"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id=".hUHi}up+oR_KZcpz[$t"><value name="speed"><block type="math_arithmetic" id="P.w5qrn.?3ng[S.3%{P;"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="tuW!CeiApNVj!9F/Oz3="><field name="proportional_value">0.1</field></block></value><value name="B"><block type="variables_get" id="jetCUfq~}?184C!6_X=`"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field></block></value></block></value></block></next></block></next></block></next></block></xml>',
                     expect:
-                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">2000</field></block></value></block></next></block></xml>'
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="YN=HD(iBZFpAKW%91M=l">误差</variable></variables><block type="variables_set" id=".[q,R,#:Xz:C3DK17a%N" x="170" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="x#q-r+aLykd.VW.HAvR4"><field name="NUM">50</field></block></value><next><block type="variables_set" id="^2oy5-,,mBR=#``Nej+8"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="~}/d08rIoqBqW#;_-q%#"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="zy7fF9D1=~|Wf5``@9.%"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field><value name="VALUE"><block type="math_arithmetic" id="CrBhFYO1^`61q,{$,MM/"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="VtA2~Qc3vibH8:QCN*;%"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="*Htq{Ek5gs10@*`OvbP!"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id=".hUHi}up+oR_KZcpz[$t"><value name="speed"><block type="math_arithmetic" id="P.w5qrn.?3ng[S.3%{P;"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="tuW!CeiApNVj!9F/Oz3="><field name="proportional_value">0.3</field></block></value><value name="B"><block type="variables_get" id="jetCUfq~}?184C!6_X=`"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field></block></value></block></value></block></next></block></next></block></next></block></xml>'
                 },
                 {
                     name: 'step2',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                    intro: '点击 运行 按钮, 观察三维仿真与实时曲线中的稳态误差对比实验结果',
                     buttons: ['run_button'],
                     expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image1') === 'undefined') {
-                            await sleep(1000);
-                        }
-
                         return true;
                     }
                 }
             ]
         },
         {
-            name: '图像预处理实验',
+            name: '积分控制实验',
             steps: [
                 {
                     name: 'step1',
-                    intro: '拖拽 设置预处理图片 功能块进入编程界面, 并与 设置图片 功能块连接',
-                    blocks: ['variable_preprocess_image_set'],
+                    intro: '拖拽 积分控制 功能块进入编程界面, 并与 误差 功能块相加后连接',
+                    blocks: ['integral', 'math_arithmetic'],
                     workspace:
-                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">图片</variable></variables><block type="wait_for_sensor_signal" id="cm+9:4Bm_)|X^4NER|!+" x="30" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="8,I|d$U#:BKj-z3+Y95#"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">图片</field><value name="VALUE"><block type="camera_snapshot" id="6,rX@2g(?q5S77-N2gKW"><field name="exposure">2000</field></block></value></block></next></block></xml>',
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="YN=HD(iBZFpAKW%91M=l">误差</variable></variables><block type="variables_set" id=".[q,R,#:Xz:C3DK17a%N" x="170" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="x#q-r+aLykd.VW.HAvR4"><field name="NUM">50</field></block></value><next><block type="variables_set" id="^2oy5-,,mBR=#``Nej+8"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="~}/d08rIoqBqW#;_-q%#"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="zy7fF9D1=~|Wf5``@9.%"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field><value name="VALUE"><block type="math_arithmetic" id="CrBhFYO1^`61q,{$,MM/"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="VtA2~Qc3vibH8:QCN*;%"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="*Htq{Ek5gs10@*`OvbP!"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id=".hUHi}up+oR_KZcpz[$t"><value name="speed"><block type="math_arithmetic" id="P.w5qrn.?3ng[S.3%{P;"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="tuW!CeiApNVj!9F/Oz3="><field name="proportional_value">0.1</field></block></value><value name="B"><block type="variables_get" id="jetCUfq~}?184C!6_X=`"><field name="VAR" id="YN=HD(iBZFpAKW%91M=l">误差</field></block></value></block></value></block></next></block></next></block></next></block></xml>',
                     expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field></block></next></block></next></block></xml>'
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="KaJG}7yB,7MkNE{eun~+">误差</variable></variables><block type="variables_set" id="3U!WTEbQ,O:G#]XY?@]f" x="90" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="D@+f,vQc63tky?)t[$bQ"><field name="NUM">50</field></block></value><next><block type="variables_set" id="!tFlaVUv;#L|$W%HSIxc"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="5|PQ|gfo{:_K-NfC_)j:"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="`R#PKiJmIZ+_}|%eKQ|d"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field><value name="VALUE"><block type="math_arithmetic" id="FW)47;p?9HyCd,.2A,$t"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="vun9lrb2UT?qSu8nCL`J"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="a(XMB@5e/:lB|`)+a8MJ"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id="uMnRX3PI|oA?0OlfxrFt"><value name="speed"><block type="math_arithmetic" id="R[K/7Cj67+*]nmYm@y!m"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="ci?QeDC.WfC)^7[6`V?G"><field name="proportional_value">0.1</field></block></value><value name="B"><block type="math_arithmetic" id="c2cS;5j;#8`~Gbtc08,c"><field name="OP">ADD</field><value name="A"><block type="variables_get" id="TbzhO~;bH5dT#ZxUY(iz"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value><value name="B"><block type="integral" id="ihe+.}czV?l{qB2RA7CZ"><field name="integral_value">0.1</field><field name="error" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value></block></value></block></value></block></next></block></next></block></next></block></xml>'
                 },
                 {
                     name: 'step2',
-                    intro: '拖拽 二值化 功能块进入编程界面, 并与 设置预处理图片 功能块连接',
-                    blocks: ['threshold'],
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step3',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                    intro: '点击 运行 按钮, 观察三维仿真与实时曲线中的实验结果',
                     buttons: ['run_button'],
                     expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image2') === 'undefined') {
-                            await sleep(1000);
-                        }
-
                         return true;
                     }
                 }
             ]
         },
         {
-            name: '二值化调整阈值实验',
+            name: '超调量调节实验',
             steps: [
                 {
                     name: 'step1',
-                    intro: '设置 二值化 功能块最小值为50, 最大值为100',
+                    intro: '设置 积分控制 功能块参数为0.5',
                     workspace:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></xml>',
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="KaJG}7yB,7MkNE{eun~+">误差</variable></variables><block type="variables_set" id="3U!WTEbQ,O:G#]XY?@]f" x="90" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="D@+f,vQc63tky?)t[$bQ"><field name="NUM">50</field></block></value><next><block type="variables_set" id="!tFlaVUv;#L|$W%HSIxc"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="5|PQ|gfo{:_K-NfC_)j:"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="`R#PKiJmIZ+_}|%eKQ|d"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field><value name="VALUE"><block type="math_arithmetic" id="FW)47;p?9HyCd,.2A,$t"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="vun9lrb2UT?qSu8nCL`J"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="a(XMB@5e/:lB|`)+a8MJ"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id="uMnRX3PI|oA?0OlfxrFt"><value name="speed"><block type="math_arithmetic" id="R[K/7Cj67+*]nmYm@y!m"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="ci?QeDC.WfC)^7[6`V?G"><field name="proportional_value">0.1</field></block></value><value name="B"><block type="math_arithmetic" id="c2cS;5j;#8`~Gbtc08,c"><field name="OP">ADD</field><value name="A"><block type="variables_get" id="TbzhO~;bH5dT#ZxUY(iz"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value><value name="B"><block type="integral" id="ihe+.}czV?l{qB2RA7CZ"><field name="integral_value">0.1</field><field name="error" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value></block></value></block></value></block></next></block></next></block></next></block></xml>',
                     expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value></block></next></block></next></block></xml>'
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="KaJG}7yB,7MkNE{eun~+">误差</variable></variables><block type="variables_set" id="3U!WTEbQ,O:G#]XY?@]f" x="90" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="D@+f,vQc63tky?)t[$bQ"><field name="NUM">50</field></block></value><next><block type="variables_set" id="!tFlaVUv;#L|$W%HSIxc"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="5|PQ|gfo{:_K-NfC_)j:"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="`R#PKiJmIZ+_}|%eKQ|d"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field><value name="VALUE"><block type="math_arithmetic" id="FW)47;p?9HyCd,.2A,$t"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="vun9lrb2UT?qSu8nCL`J"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="a(XMB@5e/:lB|`)+a8MJ"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id="uMnRX3PI|oA?0OlfxrFt"><value name="speed"><block type="math_arithmetic" id="R[K/7Cj67+*]nmYm@y!m"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="ci?QeDC.WfC)^7[6`V?G"><field name="proportional_value">0.1</field></block></value><value name="B"><block type="math_arithmetic" id="c2cS;5j;#8`~Gbtc08,c"><field name="OP">ADD</field><value name="A"><block type="variables_get" id="TbzhO~;bH5dT#ZxUY(iz"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value><value name="B"><block type="integral" id="ihe+.}czV?l{qB2RA7CZ"><field name="integral_value">0.5</field><field name="error" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value></block></value></block></value></block></next></block></next></block></next></block></xml>'
                 },
                 {
                     name: 'step2',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                    intro: '点击 运行 按钮, 观察三维仿真与实时曲线中的超调量对比实验结果',
                     buttons: ['run_button'],
                     expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image2') === 'undefined') {
-                            await sleep(1000);
-                        }
-
                         return true;
                     }
                 }
             ]
         },
         {
-            name: '提取边缘实验',
+            name: '微分控制实验',
             steps: [
                 {
                     name: 'step1',
-                    intro: '拖拽 设置边缘 功能块进入编程界面, 并与 设置预处理图片 功能块连接',
-                    blocks: ['variable_contour_set'],
+                    intro: '拖拽 微分控制 功能块进入编程界面, 并与 误差 功能块相加后连接',
+                    blocks: ['derivative', 'math_arithmetic'],
                     workspace:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value></block></next></block></next></block></xml>',
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="KaJG}7yB,7MkNE{eun~+">误差</variable></variables><block type="variables_set" id="3U!WTEbQ,O:G#]XY?@]f" x="90" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="D@+f,vQc63tky?)t[$bQ"><field name="NUM">50</field></block></value><next><block type="variables_set" id="!tFlaVUv;#L|$W%HSIxc"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="5|PQ|gfo{:_K-NfC_)j:"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="`R#PKiJmIZ+_}|%eKQ|d"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field><value name="VALUE"><block type="math_arithmetic" id="FW)47;p?9HyCd,.2A,$t"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="vun9lrb2UT?qSu8nCL`J"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="a(XMB@5e/:lB|`)+a8MJ"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id="uMnRX3PI|oA?0OlfxrFt"><value name="speed"><block type="math_arithmetic" id="R[K/7Cj67+*]nmYm@y!m"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="ci?QeDC.WfC)^7[6`V?G"><field name="proportional_value">0.1</field></block></value><value name="B"><block type="math_arithmetic" id="c2cS;5j;#8`~Gbtc08,c"><field name="OP">ADD</field><value name="A"><block type="variables_get" id="TbzhO~;bH5dT#ZxUY(iz"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value><value name="B"><block type="integral" id="ihe+.}czV?l{qB2RA7CZ"><field name="integral_value">0.1</field><field name="error" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value></block></value></block></value></block></next></block></next></block></next></block></xml>',
                     expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="PkD/zC*z$W?+u=xeypj7">边缘</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="2LGi|)M~RCo=skkRJ:[{"><field name="VAR" id="PkD/zC*z$W?+u=xeypj7">边缘</field></block></next></block></next></block></next></block></xml>'
+                        '<xml><variables><variable id="]BMrwz6fOMJY=.sIU!a6">预期高度</variable><variable id="]i1rwz6fOMJY=.sIU!g3">当前高度</variable><variable id="KaJG}7yB,7MkNE{eun~+">误差</variable></variables><block type="variables_set" id="3U!WTEbQ,O:G#]XY?@]f" x="90" y="110"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field><value name="VALUE"><block type="math_number" id="D@+f,vQc63tky?)t[$bQ"><field name="NUM">50</field></block></value><next><block type="variables_set" id="!tFlaVUv;#L|$W%HSIxc"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field><value name="VALUE"><block type="get_altitude" id="5|PQ|gfo{:_K-NfC_)j:"><field name="sensor">高度传感器</field></block></value><next><block type="variables_set" id="`R#PKiJmIZ+_}|%eKQ|d"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field><value name="VALUE"><block type="math_arithmetic" id="FW)47;p?9HyCd,.2A,$t"><field name="OP">MINUS</field><value name="A"><block type="variables_get" id="vun9lrb2UT?qSu8nCL`J"><field name="VAR" id="]BMrwz6fOMJY=.sIU!a6">预期高度</field></block></value><value name="B"><block type="variables_get" id="a(XMB@5e/:lB|`)+a8MJ"><field name="VAR" id="]i1rwz6fOMJY=.sIU!g3">当前高度</field></block></value></block></value><next><block type="speed" id="uMnRX3PI|oA?0OlfxrFt"><value name="speed"><block type="math_arithmetic" id="R[K/7Cj67+*]nmYm@y!m"><field name="OP">MULTIPLY</field><value name="A"><block type="proportional" id="ci?QeDC.WfC)^7[6`V?G"><field name="proportional_value">0.1</field></block></value><value name="B"><block type="math_arithmetic" id="oqpF}KAhkP|f(X`t8a:0"><field name="OP">ADD</field><value name="A"><block type="math_arithmetic" id="c2cS;5j;#8`~Gbtc08,c"><field name="OP">ADD</field><value name="A"><block type="variables_get" id="TbzhO~;bH5dT#ZxUY(iz"><field name="VAR" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value><value name="B"><block type="integral" id="ihe+.}czV?l{qB2RA7CZ"><field name="integral_value">0.1</field><field name="error" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value></block></value><value name="B"><block type="derivative" id="-F5|F;YJ6UKq9Bwe0(Il"><field name="derivative_value">0.1</field><field name="error" id="KaJG}7yB,7MkNE{eun~+">误差</field></block></value></block></value></block></value></block></next></block></next></block></next></block></xml>'
                 },
                 {
                     name: 'step2',
-                    intro: '拖拽 提取边缘 功能块进入编程界面, 并与 设置边缘 功能块连接',
-                    blocks: ['findcontours'],
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step3',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
+                    intro: '点击 运行 按钮, 观察三维仿真与实时曲线中的实验结果',
                     buttons: ['run_button'],
                     expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image3') === 'undefined') {
-                            await sleep(1000);
-                        }
-
                         return true;
                     }
-                }
-            ]
-        },
-        {
-            name: '提取边缘调整阈值实验',
-            steps: [
-                {
-                    name: 'step1',
-                    intro: '设置 提取边缘 功能块最小值为10, 最大值为30',
-                    workspace:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">0</field><field name="max">255</field></block></value></block></next></block></next></block></next></block></xml>',
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step2',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
-                    buttons: ['run_button'],
-                    expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image3') === 'undefined') {
-                            await sleep(1000);
-                        }
-
-                        return true;
-                    }
-                }
-            ]
-        },
-        {
-            name: '提取中心点实验',
-            steps: [
-                {
-                    name: 'step1',
-                    intro: '拖拽 设置中心点 功能块进入编程界面, 并与 设置边缘 功能块连接',
-                    blocks: ['variable_center_set'],
-                    workspace:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value></block></next></block></next></block></next></block></xml>',
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="(Uam!xsmGR+*mO!fEc~h">中心点</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="zVAyF7xr,={!aZl,7x]l"><field name="VAR" id="(Uam!xsmGR+*mO!fEc~h">中心点</field></block></next></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step2',
-                    intro: '拖拽 提取中心点 功能块进入编程界面, 并与 设置中心点 功能块连接',
-                    blocks: ['findcenter'],
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="ngGsJ|]W6|4*;S=B$V5t">中心点</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="NJQrl{iE7F]5wA$86b,Q"><field name="VAR" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field><value name="VALUE"><block type="findcenter" id=",/Q06oI8k{MdjLT`9pn;"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value></block></next></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step3',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
-                    buttons: ['run_button'],
-                    expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image4') === 'undefined') {
-                            await sleep(1000);
-                        }
-
-                        return true;
-                    }
-                }
-            ]
-        },
-        {
-            name: '形状识别实验',
-            steps: [
-                {
-                    name: 'step1',
-                    intro: '拖拽 设置工件类型 功能块进入编程界面, 并与 设置中心点 功能块连接',
-                    blocks: ['variable_sharp_set'],
-                    workspace:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="ngGsJ|]W6|4*;S=B$V5t">中心点</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="NJQrl{iE7F]5wA$86b,Q"><field name="VAR" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field><value name="VALUE"><block type="findcenter" id=",/Q06oI8k{MdjLT`9pn;"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value></block></next></block></next></block></next></block></next></block></xml>',
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="ngGsJ|]W6|4*;S=B$V5t">中心点</variable><variable id="9/|0Ekydm$}$zhqi02a$">工件类型</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="NJQrl{iE7F]5wA$86b,Q"><field name="VAR" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field><value name="VALUE"><block type="findcenter" id=",/Q06oI8k{MdjLT`9pn;"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value><next><block type="variables_set" id="hd0a^HIA|7yBWdTG.Il("><field name="VAR" id="9/|0Ekydm$}$zhqi02a$">工件类型</field></block></next></block></next></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step2',
-                    intro: '拖拽 形状识别 功能块进入编程界面, 并与 设置工件类型 功能块连接',
-                    blocks: ['shapedetect'],
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="ngGsJ|]W6|4*;S=B$V5t">中心点</variable><variable id="BjY+_k6qc`DvCq#D6ak|">工件类型</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="NJQrl{iE7F]5wA$86b,Q"><field name="VAR" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field><value name="VALUE"><block type="findcenter" id=",/Q06oI8k{MdjLT`9pn;"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value><next><block type="variables_set" id="v)O#A+,Ll+7gTQFn^gQT"><field name="VAR" id="BjY+_k6qc`DvCq#D6ak|">工件类型</field><value name="VALUE"><block type="shapedetect" id="3y_lzy!6U0D^l%C`-^Tx"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value></block></next></block></next></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step3',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
-                    buttons: ['run_button'],
-                    expect: async () => {
-                        while (sender.runFlag && typeof sender.$refs.codeEditor.getVariable('inspector_variable_image5') === 'undefined') {
-                            await sleep(1000);
-                        }
-
-                        return true;
-                    }
-                }
-            ]
-        },
-        {
-            name: '机器人抓取实验',
-            steps: [
-                {
-                    name: 'step1',
-                    intro: '拖拽 机器人抓取 功能块进入编程界面, 并与 设置工件类型 功能块连接',
-                    blocks: ['grab'],
-                    workspace:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="ngGsJ|]W6|4*;S=B$V5t">中心点</variable><variable id="BjY+_k6qc`DvCq#D6ak|">工件类型</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="NJQrl{iE7F]5wA$86b,Q"><field name="VAR" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field><value name="VALUE"><block type="findcenter" id=",/Q06oI8k{MdjLT`9pn;"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value><next><block type="variables_set" id="v)O#A+,Ll+7gTQFn^gQT"><field name="VAR" id="BjY+_k6qc`DvCq#D6ak|">工件类型</field><value name="VALUE"><block type="shapedetect" id="3y_lzy!6U0D^l%C`-^Tx"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value></block></next></block></next></block></next></block></next></block></next></block></xml>',
-                    expect:
-                        '<xml><variables><variable id="{)P=9w8zgSzZtQ7]Y`P8">图片</variable><variable id="YELasm^mOp;=P?(h{q}+">预处理图片</variable><variable id="01nW-U)u6HfpH,E[QV,m">边缘</variable><variable id="ngGsJ|]W6|4*;S=B$V5t">中心点</variable><variable id="BjY+_k6qc`DvCq#D6ak|">工件类型</variable></variables><block type="wait_for_sensor_signal" id="0Y2+p}_WmktjG[I`Yo,M" x="10" y="30"><field name="sensor">光电传感器</field><next><block type="variables_set" id="G;wL1U@MU*(7.!+_B0c7"><field name="VAR" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><value name="VALUE"><block type="camera_snapshot" id="0YkFZh^!bpNABU5ZZ5md"><field name="exposure">2000</field></block></value><next><block type="variables_set" id="^N1C,sd+$7QlhJm.ve]!"><field name="VAR" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><value name="VALUE"><block type="threshold" id="(Nj$ZiilybQH88;:4a6~"><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field><field name="min">50</field><field name="max">100</field></block></value><next><block type="variables_set" id="uPX*W1$sk6ZI%J[nXBx)"><field name="VAR" id="01nW-U)u6HfpH,E[QV,m">边缘</field><value name="VALUE"><block type="findcontours" id="doo,v/NjmWf8sp).j_nv"><field name="image" id="YELasm^mOp;=P?(h{q}+">预处理图片</field><field name="min">10</field><field name="max">30</field></block></value><next><block type="variables_set" id="NJQrl{iE7F]5wA$86b,Q"><field name="VAR" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field><value name="VALUE"><block type="findcenter" id=",/Q06oI8k{MdjLT`9pn;"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value><next><block type="variables_set" id="v)O#A+,Ll+7gTQFn^gQT"><field name="VAR" id="BjY+_k6qc`DvCq#D6ak|">工件类型</field><value name="VALUE"><block type="shapedetect" id="3y_lzy!6U0D^l%C`-^Tx"><field name="contours" id="01nW-U)u6HfpH,E[QV,m">边缘</field><field name="image" id="{)P=9w8zgSzZtQ7]Y`P8">图片</field></block></value><next><block type="grab" id="cb5V(=WdDnvY@3cqo):6"><field name="type" id="BjY+_k6qc`DvCq#D6ak|">工件类型</field><field name="center" id="ngGsJ|]W6|4*;S=B$V5t">中心点</field></block></next></block></next></block></next></block></next></block></next></block></next></block></xml>'
-                },
-                {
-                    name: 'step2',
-                    intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果',
-                    buttons: ['run_button'],
-                    expect: async () => true
                 }
             ]
         }

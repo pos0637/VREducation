@@ -38,47 +38,32 @@
                     <a-sub-menu key="experiment" title="无人机实验">
                         <a-menu-item key="experiment1">
                             <div>
-                                <span>图像采集实验</span>
+                                <span>上升速度控制实验</span>
                             </div>
                         </a-menu-item>
                         <a-menu-item key="experiment2">
                             <div>
-                                <span>曝光度实验</span>
+                                <span>比例控制实验</span>
                             </div>
                         </a-menu-item>
                         <a-menu-item key="experiment3">
                             <div>
-                                <span>图像预处理实验</span>
+                                <span>稳态误差调节实验</span>
                             </div>
                         </a-menu-item>
                         <a-menu-item key="experiment4">
                             <div>
-                                <span>二值化调整阈值</span>
+                                <span>积分控制实验</span>
                             </div>
                         </a-menu-item>
                         <a-menu-item key="experiment5">
                             <div>
-                                <span>提取边缘实验</span>
+                                <span>超调量调节实验</span>
                             </div>
                         </a-menu-item>
                         <a-menu-item key="experiment6">
                             <div>
-                                <span>提取边缘阈值</span>
-                            </div>
-                        </a-menu-item>
-                        <a-menu-item key="experiment7">
-                            <div>
-                                <span>提取中心点实验</span>
-                            </div>
-                        </a-menu-item>
-                        <a-menu-item key="experiment8">
-                            <div>
-                                <span>形状识别实验</span>
-                            </div>
-                        </a-menu-item>
-                        <a-menu-item key="experiment9">
-                            <div>
-                                <span>机器人抓取实验</span>
+                                <span>微分控制实验</span>
                             </div>
                         </a-menu-item>
                     </a-sub-menu>

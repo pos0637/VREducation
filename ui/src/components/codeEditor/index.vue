@@ -88,7 +88,6 @@ import Blockly from 'blockly';
 import 'blockly/blocks';
 import 'blockly/javascript';
 import * as Zh from 'blockly/msg/zh-hans';
-import { sleep } from '@/miscs/coroutine';
 
 export default {
     name: 'CodeEditor',
@@ -179,9 +178,9 @@ export default {
                 this.workspace.highlightBlock(id);
             };
             top.window.delay = async () => {
-                if (this.experimentMode) {
-                    await sleep(500);
-                }
+                // if (this.experimentMode) {
+                //     await sleep(500);
+                // }
             };
         },
         startTour(id) {

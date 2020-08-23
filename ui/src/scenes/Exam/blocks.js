@@ -27,7 +27,7 @@ export const blocks = [
             {
                 type: 'field_number',
                 name: 'proportional_value',
-                value: 0,
+                value: 0.1,
                 precision: 0.1
             }
         ],
@@ -48,7 +48,7 @@ export const blocks = [
             {
                 type: 'field_number',
                 name: 'integral_value',
-                value: 0,
+                value: 0.1,
                 precision: 0.1
             },
             {
@@ -76,7 +76,7 @@ export const blocks = [
             {
                 type: 'field_number',
                 name: 'derivative_value',
-                value: 0,
+                value: 0.1,
                 precision: 0.1
             },
             {
