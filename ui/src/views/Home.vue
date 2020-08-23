@@ -35,7 +35,7 @@
                             <span>无人机拆装</span>
                         </div>
                     </a-menu-item>
-                    <a-sub-menu key="experiment" title="无人机实验">
+                    <a-sub-menu key="experiment" title="PID控制实验">
                         <a-menu-item key="experiment1">
                             <div>
                                 <span>上升速度控制实验</span>

@@ -23,12 +23,6 @@ export const toolbox = `<xml xmlns="https://developers.google.com/blockly/xml" i
     <block type="variables_set" id="variable_error_set">
         <field name="VAR" id="]i17utjfOMJY=.sIUx1m">误差</field>
     </block>
-    <block type="variables_get" id="variable_speed_get">
-        <field name="VAR" id="82jjstjfOMJY=.s0cmJz">计算结果1</field>
-    </block>
-    <block type="variables_set" id="variable_speed_set">
-        <field name="VAR" id="82jjstjfOMJY=.s0cmJz">计算结果1</field>
-    </block>
     <block type="speed" id="speed"></block>
     <block type="math_number" id="math_number">
         <field name="NUM">0</field>

@@ -3,7 +3,7 @@
         <a-layout style="width: 100%; height: 100%; background-color: #fff;">
             <a-row style="padding: 8px;">
                 <a-col :span="12" style="text-align: left">
-                    <span style="font-size: 1.4rem; color: black;">无人机实验</span>
+                    <span style="font-size: 1.4rem; color: black;">无人机PID控制实验介绍</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
                     <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
