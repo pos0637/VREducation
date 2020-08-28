@@ -112,8 +112,9 @@ export const blocks = [
         tooltip: '设置转速',
         helpUrl: '',
         javascript: block => {
-            var value_speed = Blockly.JavaScript.valueToCode(block, 'speed', Blockly.JavaScript.ORDER_ATOMIC);
-            const code = `await top.window.speed(${value_speed});`;
+            const altitude = Blockly.JavaScript.variableDB_.getName('预期高度', Blockly.Variables.NAME_TYPE);
+            const value_speed = Blockly.JavaScript.valueToCode(block, 'speed', Blockly.JavaScript.ORDER_ATOMIC);
+            const code = `await top.window.speed(${value_speed}, typeof ${altitude} !== 'undefined' ? ${altitude} : 0.0);`;
             return code;
         }
     }

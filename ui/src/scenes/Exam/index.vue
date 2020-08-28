@@ -76,6 +76,7 @@ export default {
             lineData: [],
             eventHandler: {
                 beforeRunCode: async () => {
+                    this.expectAltitude = 0.0;
                     this.altitude = 0.0;
                     this.pterm = 0.0;
                     this.iterm = 0.0;
@@ -112,6 +113,7 @@ export default {
             loading: true,
             runFlag: false,
             gameInstance: null,
+            expectAltitude: 0.0,
             altitude: 0.0,
             pterm: 0.0,
             iterm: 0.0,
@@ -146,9 +148,10 @@ export default {
             return derivative_value * this.dterm;
         };
 
-        top.window.speed = async speed => {
+        top.window.speed = async (speed, expectAltitude) => {
             this.altitude += speed * 1.0;
-            console.debug(`altitude: ${this.altitude}, speed: ${speed}`);
+            this.expectAltitude = expectAltitude;
+            console.debug(`expect: ${expectAltitude}, altitude: ${this.altitude}, speed: ${speed}`);
         };
 
         let initialized = false;
