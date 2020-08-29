@@ -6,7 +6,7 @@
 
 <style scoped>
 .unityContainer {
-    position: fixed;
+    position: absolute;
     left: 20px;
     top: 0px;
     width: 1px;

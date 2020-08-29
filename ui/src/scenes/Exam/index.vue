@@ -77,6 +77,9 @@ export default {
             eventHandler: {
                 beforeRunCode: async () => {
                     this.expectAltitude = 0.0;
+                    this.p = null;
+                    this.i = null;
+                    this.d = null;
                     this.altitude = 0.0;
                     this.pterm = 0.0;
                     this.iterm = 0.0;
@@ -90,6 +93,14 @@ export default {
                         console.debug(`run code: ${i}`);
                         await func();
                         point.push([i, this.altitude]);
+
+                        if (i === 0) {
+                            this.gameInstance.SendMessage('JsBridge', 'UpdateTarget', this.expectAltitude);
+                            console.debug(`{p: ${this.p}, i: ${this.i}, d: ${this.d}}`);
+                            this.gameInstance.SendMessage('JsBridge', 'UpdatePID', `{p: ${this.p}, i: ${this.i}, d: ${this.d}}`);
+                            this.gameInstance.SendMessage('JsBridge', 'StartInteract', 1);
+                            this.gameInstance.SendMessage('JsBridge', 'PlayAniamtion', 2);
+                        }
                     }
 
                     const data = {
@@ -104,16 +115,15 @@ export default {
                     lineData.push(data);
 
                     this.lineData = lineData;
-                    // TODO:
-                    this.gameInstance.SendMessage('DontDestory', 'UpdateTarget', 30);
-                    this.gameInstance.SendMessage('DontDestory', 'ShowAni', 2);
-                    this.gameInstance.SendMessage('DontDestory', 'StartScence', 1);
                 }
             },
             loading: true,
             runFlag: false,
             gameInstance: null,
             expectAltitude: 0.0,
+            p: null,
+            i: null,
+            d: null,
             altitude: 0.0,
             pterm: 0.0,
             iterm: 0.0,
@@ -134,15 +144,18 @@ export default {
         };
 
         top.window.proportional = async proportional_value => {
+            this.p = proportional_value;
             return proportional_value;
         };
 
         top.window.integral = async (integral_value, error) => {
+            this.i = integral_value;
             this.iterm += error * 1.0;
             return integral_value * this.iterm;
         };
 
         top.window.derivative = async (derivative_value, error) => {
+            this.d = derivative_value;
             this.dterm = (error - this.lastError) / 1.0;
             this.lastError = error;
             return derivative_value * this.dterm;
@@ -156,7 +169,7 @@ export default {
 
         let initialized = false;
         top.window.resetScene = async id => {
-            this.gameInstance.SendMessage('DontDestory', 'SetScence', id);
+            this.gameInstance.SendMessage('JsBridge', 'SetScence', id);
             while (this.runFlag && !initialized) {
                 await sleep(1000);
             }
@@ -186,14 +199,14 @@ export default {
             } else {
                 setTimeout(() => {
                     console.debug('StartScene');
-                    this.gameInstance.SendMessage('DontDestory', 'StartScence', 1);
+                    this.gameInstance.SendMessage('JsBridge', 'StartScence', 1);
                     initialized = true;
                 }, 1);
             }
         };
 
         this.gameInstance = top.window.gameInstance;
-        this.gameInstance.SendMessage('DontDestory', 'ReplaceScene', 1);
+        this.gameInstance.SendMessage('JsBridge', 'SetScene', 1);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;

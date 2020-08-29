@@ -30,6 +30,8 @@
         }
 
         function onUnityInitialized() {
+            // TODO: 临时补丁
+            top.window.unityInitialized = true;
             top.window.onUnityInitialized && top.window.onUnityInitialized(top.window.gameInstance);
         }
 
@@ -38,16 +40,16 @@
         }
             /*
 //播放动画：0展开，1收缩，2上升，3下降。23之前应该调用pid更新
-unityInstance.SendMessage("DontDestory","ShowAni",2);
+unityInstance.SendMessage("JsBridge","ShowAni",2);
 
 //pid更新
-unityInstance.SendMessage("DontDestory","UpdataPID","{\"P\":0.01,\"I\":0.0001,\"D\":0.01,\"MinMax\":{\"x\":-100.0,\"y\":100.0}}");
+unityInstance.SendMessage("JsBridge","UpdataPID","{\"P\":0.01,\"I\":0.0001,\"D\":0.01,\"MinMax\":{\"x\":-100.0,\"y\":100.0}}");
 
 //场景选择，1为擦拆解2为升降
-unityInstance.SendMessage("DontDestory","ReplaceScene",1);
+unityInstance.SendMessage("JsBridge","SetScene",1);
 
 //风的阻力：只能为负值，如-5；第二个参数为风的类型，0一阵风（由弱到强再减弱），1持续的风（弱到强）。风力可叠加。
-unityInstance.SendMessage("DontDestory","UpdataWindForce",-5,0);
+unityInstance.SendMessage("JsBridge","UpdataWindForce",-5,0);
 */
     </script>
 </head>

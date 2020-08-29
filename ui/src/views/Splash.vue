@@ -206,6 +206,12 @@ export default {
                 this.markedWords = '加载完成，请登录。';
             }
         };
+
+        // TODO: 临时补丁
+        if (top.window.unityInitialized) {
+            this.progress = 100;
+            top.window.onUnityInitialized();
+        }
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;

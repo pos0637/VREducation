@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="myChart" :style="{ width: '450px !important', height: '300px !important', margin: 'auto' }"></div>
+        <div id="myChart" :style="{ width: '460px !important', height: '350px !important', margin: 'auto' }"></div>
     </div>
 </template>
 
@@ -37,6 +37,9 @@ export default {
             });
             let myChart = echarts.init(document.getElementById('myChart'));
             myChart.setOption({
+                title: {
+                    text: '实时曲线'
+                },
                 legend: {
                     data: legend
                 },
@@ -72,6 +75,6 @@ export default {
 
 <style scoped>
 #myChart {
-    position: fixed !important;
+    position: absolute !important;
 }
 </style>
