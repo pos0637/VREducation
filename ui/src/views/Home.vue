@@ -166,6 +166,7 @@
     height: 100%;
     padding-top: 26px;
     background-color: #ffffff;
+    overflow: hidden;
 }
 </style>
 
