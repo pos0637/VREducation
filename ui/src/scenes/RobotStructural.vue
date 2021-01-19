@@ -6,6 +6,7 @@
                     <span style="font-size: 1.4rem; color: white;">工业机器人内部结构介绍</span>
                 </a-col>
                 <a-col :span="12" style="text-align: right">
+                    <a-button data-id="next_unit" type="primary" icon="forward" style="margin-left: 8px;" @click="_readMore">延伸阅读</a-button>
                     <a-button data-id="next_unit" type="primary" icon="forward" style="margin-left: 8px;" @click="_nextUnit">下一单元</a-button>
                 </a-col>
             </a-row>
@@ -46,7 +47,7 @@ export default {
 
         const steps = [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/structural.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/structural.html"></iframe>'
             },
             {
                 intro: '学习完毕后点击 下一单元 按钮, 进入下一单元学习'
@@ -60,11 +61,11 @@ export default {
         const gameInstance = top.window.gameInstance;
         top.window.onUnityInitialized = () => {
             setTimeout(() => {
-                gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                gameInstance.SendMessage('Unity2JS', 'StartScene', '');
             }, 1);
         };
 
-        gameInstance.SendMessage('UintyConnectJS', 'SetScene', 2);
+        gameInstance.SendMessage('Unity2JS', 'SetScene', 2);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;
@@ -72,6 +73,9 @@ export default {
     methods: {
         _nextUnit() {
             this.$store.commit('changeScene', { scene: 'robotProgramming', stage: null, step: null });
+        },
+        _readMore() {
+            window.open('./guides/readMore.html', '_blank');
         }
     }
 };

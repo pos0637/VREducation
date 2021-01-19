@@ -11,10 +11,10 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 600px; magin: 10px;" scrolling="auto" src="guides/experiment.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/experiment.html"></iframe>'
             },
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/snapshot.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/snapshot.html"></iframe>'
             },
             {
                 elementId: '[data-id="wait_for_sensor_signal"]',
@@ -50,7 +50,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/exposure.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/exposure.html"></iframe>'
             },
             {
                 elementId: '[data-id="camera_snapshot"]',
@@ -75,7 +75,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/preprocess.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/preprocess.html"></iframe>'
             },
             {
                 elementId: '[data-id="variable_preprocess_image_set"]',
@@ -104,7 +104,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/threshold.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/threshold.html"></iframe>'
             },
             {
                 elementId: '[data-id="threshold"]',
@@ -129,7 +129,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/findcontours.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/findcontours.html"></iframe>'
             },
             {
                 elementId: '[data-id="variable_contour_set"]',
@@ -158,7 +158,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/canny.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/canny.html"></iframe>'
             },
             {
                 elementId: '[data-id="findcontours"]',
@@ -183,7 +183,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/findcenter.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/findcenter.html"></iframe>'
             },
             {
                 elementId: '[data-id="variable_center_set"]',
@@ -212,7 +212,7 @@ export const tours = [
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/sharpdetect.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/sharpdetect.html"></iframe>'
             },
             {
                 elementId: '[data-id="variable_sharp_set"]',
@@ -234,11 +234,42 @@ export const tours = [
     },
     {
         toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+            <block type="linearmotion" id="linearmotion"></block>
+            <block type="curvemovement" id="curvemovement"></block>
+        </xml>`,
+        steps: [
+            {
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/linearmotion.html"></iframe>'
+            },
+            {
+                elementId: '[data-id="linearmotion"]',
+                intro: '拖拽 直线运动 功能块进入编程界面, 并与 设置工件类型 功能块连接'
+            },
+            {
+                elementId: '[data-id="location_button"]',
+                intro: '拖拽 机器人末端 移动到合适位置, 点击编程界面中的 直线运动 功能块, 点击 获取坐标 按钮'
+            },
+            {
+                elementId: '[data-id="curvemovement"]',
+                intro: '拖拽 曲线运动 功能块进入编程界面, 并与 直线运动 功能块连接'
+            },
+            {
+                elementId: '[data-id="location_button"]',
+                intro: '拖拽 机器人末端 移动到合适位置, 点击编程界面中的 曲线运动 功能块, 点击 获取坐标 按钮'
+            },
+            {
+                elementId: '[data-id="run_button"]',
+                intro: '点击 运行 按钮, 观察三维仿真与探查器界面中的实验结果'
+            }
+        ]
+    },
+    {
+        toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
             <block type="grab" id="grab"></block>
         </xml>`,
         steps: [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/grab.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/grab.html"></iframe>'
             },
             {
                 elementId: '[data-id="grab"]',

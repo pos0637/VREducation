@@ -40,6 +40,11 @@
                             <span>视觉工作站拆装</span>
                         </div>
                     </a-menu-item>
+                    <a-menu-item key="baseProgramming">
+                        <div>
+                            <span>基&nbsp;础&nbsp;编&nbsp;程</span>
+                        </div>
+                    </a-menu-item>
                     <a-sub-menu key="experiment" title="视觉抓取实验">
                         <a-menu-item key="experiment1">
                             <div>
@@ -81,7 +86,17 @@
                                 <span>形状识别实验</span>
                             </div>
                         </a-menu-item>
+                        <!-- <a-menu-item key="experiment9">
+                            <div>
+                                <span>机器人抓取实验</span>
+                            </div>
+                        </a-menu-item> -->
                         <a-menu-item key="experiment9">
+                            <div>
+                                <span>移动示教实验</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item key="experiment10">
                             <div>
                                 <span>机器人抓取实验</span>
                             </div>
@@ -197,6 +212,7 @@ import Introduction from '@/scenes/Introduction';
 import RobotStructural from '@/scenes/RobotStructural';
 import VisionSystemStructural from '@/scenes/VisionSystemStructural';
 import RobotProgramming from '@/scenes/RobotProgramming';
+import BaseProgramming from '@/scenes/BaseProgramming';
 import Experiment from '@/scenes/Experiment';
 import Exam from '@/scenes/Exam';
 import ExperimentReports from '@/views/experimentReports';
@@ -221,6 +237,8 @@ export default {
                 return RobotProgramming;
             } else if (scene === 'visionSystemStructural') {
                 return VisionSystemStructural;
+            } else if (scene.startsWith('baseProgramming')) {
+                return BaseProgramming;
             } else if (scene.startsWith('experiment')) {
                 return Experiment;
             } else if (scene === 'exam') {
@@ -237,6 +255,9 @@ export default {
     },
     created() {
         this.userInfo = getUserInfo();
+        // 启动全屏!
+        this._launchFullscreen(document.documentElement); // 整个网页
+        this.$message.success('点击Esc,退出全屏', 10);
     },
     methods: {
         _onMenuSelect(item) {
@@ -255,6 +276,18 @@ export default {
                 .catch(() => {
                     this.$message.error('请求失败，请重试');
                 });
+        },
+        // 判断各种浏览器，找到正确的方法进行全屏
+        _launchFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
         }
     }
 };

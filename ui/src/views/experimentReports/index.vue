@@ -39,7 +39,7 @@
 
 <script>
 import { getUserInfo } from '@/miscs/auth';
-import ExamReport from '@/scenes/ExamReport';
+import ExamReport from '@/scenes/ExamReport/index2';
 import request from '@/miscs/request';
 import { filterObj } from '@/miscs/helper';
 

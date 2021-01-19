@@ -188,6 +188,76 @@ export const blocks = [
         }
     },
     {
+        type: "linearmotion",
+        message0: "直线运动： %1 坐标： %2 %3 旋转： %4",
+        args0: [
+            {
+                type: "input_dummy"
+            },
+            {
+                type: "field_label_serializable",
+                name: "position",
+                text: `{"x":-0.4060001,"y":1.246,"z":4.892}`
+            },
+            {
+                type: "input_dummy"
+            },
+            {
+                type: "field_label_serializable",
+                name: "quaternion",
+                text: `{"x":0.50,"y":-0.50,"z":-0.50,"w":0.50}`
+            }
+        ],
+        inputsInline: false,
+        previousStatement: null,
+        nextStatement: null,
+        colour: 330,
+        tooltip: "直线运动",
+        helpUrl: "",
+        javascript: block => {
+            var positionValue = block.getFieldValue('position');
+            var quaternionValue = block.getFieldValue('quaternion');
+            console.debug("=====linearmotion=====", positionValue, quaternionValue);
+            var code = `top.window.addPoint(${positionValue}, ${quaternionValue});\n`;
+            return code;
+        }
+    },
+    {
+        type: "curvemovement",
+        message0: "曲线运动： %1 坐标： %2 %3 旋转： %4",
+        args0: [
+            {
+                type: "input_dummy"
+            },
+            {
+                type: "field_label_serializable",
+                name: "position",
+                text: `{"x":-0.4060001,"y":1.246,"z":4.892}`
+            },
+            {
+                type: "input_dummy"
+            },
+            {
+                type: "field_label_serializable",
+                name: "quaternion",
+                text: `{"x":0.50,"y":-0.50,"z":-0.50,"w":0.50}`
+            }
+        ],
+        inputsInline: false,
+        previousStatement: null,
+        nextStatement: null,
+        colour: 330,
+        tooltip: "曲线运动",
+        helpUrl: "",
+        javascript: block => {
+            var positionValue = block.getFieldValue('position');
+            var quaternionValue = block.getFieldValue('quaternion');
+            console.debug("=====curvemovement=====", positionValue, quaternionValue);
+            var code = `top.window.addPoint(${positionValue}, ${quaternionValue});\n`;
+            return code;
+        }
+    },
+    {
         type: 'grab',
         message0: '机器人抓取 工件类型: %1 %2 中心点: %3',
         args0: [

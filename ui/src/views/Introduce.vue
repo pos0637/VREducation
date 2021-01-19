@@ -16,11 +16,11 @@
                                 <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">所属专业类：{{ experimentInfo.major_category }}</li>
                                 <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">对应专业：{{ experimentInfo.major }}</li>
                                 <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">学校：{{ experimentInfo.college }}</li>
-                                <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">负责人：洪联系</li>
-                                <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">试用账号：admin</li>
-                                <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">试用密码：123456</li>
+                                <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">负责人：{{ experimentInfo.principal }}</li>
+                                <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">试用账号：{{ experimentInfo.test_account }}</li>
+                                <li style="color:#ffffff;opacity:0.5;font-size: 11pt;width: 220px;">试用密码：{{ experimentInfo.test_password }}</li>
                             </ul>
-                            <div class="details-page-info-description" style="height: 80px;color:#ffffff">
+                            <div class="details-page-info-description" style="height: auto; max-height:130px; color:#ffffff">
                                 <p style="margin-top: 15px;font-size: 12pt;line-height: 22px;">
                                     {{ experimentInfo.description }}
                                 </p>
@@ -30,13 +30,36 @@
                                     <a-button type="primary" id="doBtn">我要做实验</a-button>
                                 </a>
                             </div>
+                            <div class="details-page-info-views">浏览量： {{ isEmpty(experimentInfo.view_count) ? 0 : experimentInfo.view_count }}</div>
                         </div>
                         <div class="details-page-col details-page-thumb" style="padding-top: 0px;">
-                            <div style="width: 400px;float:right;margin-top:40px;margin-right: 10px;">
-                                <div class="play_videoPlayer_box f_left" style="margin: 0px auto;height: 235px;">
-                                    <video src="/VREducation/videos/home.mp4" width="100%" height="100%" preload="auto" controls="controls"></video>
+                            <div style="width: 400px; float: right; margin-right: 10px;">
+                                <div class="item" :class="videoItem==='introduction'?'current-item':''" @click="_setVideoItem('introduction')">
+                                项目简介视频
+                                </div>
+                                <div class="item" :class="videoItem==='introduction'?'':'current-item'" style="margin-left: 10px;" @click="_setVideoItem('guidance')">
+                                项目引导视频
                                 </div>
                             </div>
+                            <!-- 简介视频 -->
+                            <div class="video-item" :class="videoItem==='introduction'?'':'hide'">
+                                <div class="play_videoPlayer_box f_left" style="margin: 0px auto;height: 235px;">
+                                <video id="introduction-video" :src="require('../assets/homeIntroduction.mp4')" width="100%" height="100%" preload="auto"
+                                    controls="controls" autoplay="autoplay"></video>
+                                </div>
+                            </div>
+                            <!-- 引导视频 -->
+                            <div class="video-item" :class="videoItem==='introduction'?'hide':''">
+                                <div class="play_videoPlayer_box f_left" style="margin: 0px auto;height: 235px;">
+                                <video id="guidance-video" :src="require('../assets/homeGuide.mp4')" width="100%" height="100%" preload="auto"
+                                    controls="controls"></video>
+                                </div>
+                            </div>
+                            <!-- <div style="width: 400px;float:right;margin-top:40px;margin-right: 10px;">
+                                <div class="play_videoPlayer_box f_left" style="margin: 0px auto;height: 235px;">
+                                    <video :src="require('../assets/home.mp4')" width="100%" height="100%" preload="auto" controls="controls"></video>
+                                </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -69,7 +92,7 @@
     </div>
 </template>
 
-<style>
+<style scoped>
 .ant-tabs {
     text-align: left;
 }
@@ -285,9 +308,10 @@
 }
 
 .details-page-info-btns {
+    display: inline-block;
     margin-top: 25px;
     margin-left: -10px;
-    width: 100%;
+    width: 50%;
     margin-bottom: 40px;
 }
 
@@ -301,6 +325,12 @@
 .details-page-info-btns .btn {
     float: left;
     margin: 0 10px;
+}
+
+.details-page-info-views {
+    display: inline-block;
+    float: right;
+    margin-top: 25px;
 }
 
 .details-page-info-do-btn {
@@ -341,6 +371,29 @@
     top: 0;
     left: 0;
 }
+.item {
+    width: 120px; 
+    height: 40px; 
+    line-height: 40px; 
+    text-align: center; 
+    cursor: pointer; 
+    font-size: 15px;  
+    display: inline-block;
+    background-color: azure;
+}
+.current-item {
+    background-color: blue; 
+    color: #ffffff;
+}
+.video-item {
+    width: 400px;
+    float:right;
+    margin-top:20px;
+    margin-right: 10px;
+}
+.hide {
+    display: none;
+}
 </style>
 
 <script>
@@ -353,12 +406,14 @@ import Exam from '@/scenes/Exam';
 import ExperimentReports from '@/views/experimentReports';
 import { noAuthLogin } from '@/api/login';
 import request from '@/miscs/request';
+import { isEmpty } from '@/miscs/helper';
 
 export default {
     name: 'Home',
     data() {
         return {
-            experimentInfo: {}
+            experimentInfo: {},
+            videoItem: 'introduction'
         };
     },
     computed: {
@@ -390,6 +445,7 @@ export default {
         this._noAuthLogin();
     },
     methods: {
+        isEmpty,
         _onChangeScene() {
             this.$store.commit('changeScene', { scene: 'splash', stage: null, step: null });
         },
@@ -398,30 +454,56 @@ export default {
         },
         _noAuthLogin() {
             noAuthLogin().then(() => {
-                request({
-                    url: `/online/cgform/api/getData/da7a7f389af04cc4a8275ebfe3d804a9`,
-                    method: 'GET',
-                    params: {
-                        _t: new Date(),
-                        column: 'createTime',
-                        order: 'desc',
-                        pageNo: 1,
-                        pageSize: 10,
-                        superQueryMatchType: 'and'
+                this._addViewCount();
+                this._getData();
+            });
+        },
+        _getData() {
+            request({
+                url: `/online/cgform/api/getData/da7a7f389af04cc4a8275ebfe3d804a9`,
+                method: 'GET',
+                params: {
+                    _t: new Date(),
+                    column: 'createTime',
+                    order: 'desc',
+                    pageNo: 1,
+                    pageSize: 10,
+                    superQueryMatchType: 'and'
+                }
+            })
+                .then(res => {
+                    if (typeof res.result.records !== 'undefined') {
+                        this.experimentInfo = res.result.records[0];
+                    } else {
+                        this.experimentInfo = {};
                     }
                 })
-                    .then(res => {
-                        console.log(res);
-                        if (typeof res.result.records !== 'undefined') {
-                            this.experimentInfo = res.result.records[0];
-                        } else {
-                            this.experimentInfo = {};
-                        }
-                    })
-                    .catch(() => {
-                        this.experimentInfo = {};
-                    });
+                .catch(() => {
+                    this.experimentInfo = {};
+                });
+        },
+        _addViewCount() {
+            request({
+                url: `/online/cgform/api/doButton`,
+                method: 'POST',
+                data: {
+                    formId: 'da7a7f389af04cc4a8275ebfe3d804a9',
+                    buttonCode: 'add_view_count',
+                    dataId: '1298867703041335298'
+                }
+            }).then(() => {
+                this._getData();
             });
+        },
+        _setVideoItem(value) {
+            this.videoItem = value;
+            if (value === 'introduction') {
+                document.getElementById("guidance-video").pause();
+                document.getElementById("introduction-video").play();
+            } else {
+                document.getElementById("introduction-video").pause();
+                document.getElementById("guidance-video").play();
+            }
         }
     }
 };

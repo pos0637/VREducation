@@ -71,10 +71,10 @@
                             htmlType="submit"
                             :loading="loginBtn"
                             @click.stop.prevent="_onLoginButtonClicked"
-                            :disabled="loginBtn"
+                            :disabled="loginBtn || !initializedSuccess"
                             >登录</a-button
                         >
-                        <a-button class="clam" type="primary" @click.stop.prevent="_noAuthLogin">专家入口</a-button>
+                        <a-button :disabled="!initializedSuccess" class="clam" type="primary" @click.stop.prevent="_noAuthLogin">专家入口</a-button>
                     </a-row>
                 </a-col>
             </a-form>
@@ -190,6 +190,7 @@ export default {
             requestCodeSuccess: false,
             progress: 0,
             loginSuccess: false,
+            initializedSuccess: false,
             markedWords: '正在加载, 请稍等......'
         };
     },

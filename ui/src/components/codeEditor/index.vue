@@ -35,15 +35,33 @@
                     :data-id="inspectorVariables[index].id"
                     :data-name="item.name"
                     class="inspector_variable_image"
-                    @click="_onImageInspectorClick"
+                    @click="_onImageInspectorClick(index)"
                 />
             </a-col>
         </a-row>
-        <a-modal v-model="imageInspectorVisiable" :title="imageInspectorTitle">
+        <a-modal v-model="imageInspectorVisiable" :title="imageInspectorTitle" :width="'60%'">
             <template slot="footer">
                 <span />
             </template>
             <img :src="this.imageInspectorData" class="image_inspector" />
+        </a-modal>
+        <a-modal v-model="testFlag" :title="'图片展示'" :width="'60%'">
+            <swiper :options="swiperOption" ref="mySwiper">
+                <!-- 轮播内容 -->
+                <swiper-slide class="swiper-slide" v-for="imageObject in base64Images" :key="imageObject.id" style="text-align:center;">
+                    <div style="font-size: 25px; font-weight:600;">{{ imageObject.title }}</div>
+                    <img :src="imageObject.url" />
+                </swiper-slide>
+                <!-- 轮播组件 -->
+                <div class="swiper-button-prev" slot="button-prev" @click="_prev"></div>
+                <div class="swiper-button-next" slot="button-next" @click="_next"></div>
+                <div class="swiper-pagination" slot="pagination"></div>
+                <!-- 轮播组件 end -->
+                <!-- 轮播内容 end -->
+            </swiper>
+            <template slot="footer">
+                <a-button key="submit" type="primary" @click="_handleOk">确认</a-button>
+            </template>
         </a-modal>
     </a-layout>
 </template>
@@ -51,6 +69,9 @@
 <style>
 .introjs-tooltip {
     max-width: unset !important;
+}
+.ant-modal {
+    top: 5%;
 }
 </style>
 
@@ -107,9 +128,11 @@ import 'blockly/blocks';
 import 'blockly/javascript';
 import * as Zh from 'blockly/msg/zh-hans';
 import { sleep } from '@/miscs/coroutine';
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper';
 
 export default {
     name: 'CodeEditor',
+    components: { Swiper, SwiperSlide },
     props: {
         blocks: Array,
         toolbox: String,
@@ -124,6 +147,8 @@ export default {
             toolboxData: null,
             experimentMode: false,
             experiment: null,
+            // 选中的块
+            selectedBlock: null,
             variables: {},
             imageInspectorVisiable: false,
             imageInspectorTitle: null,
@@ -132,7 +157,30 @@ export default {
                 run_button: false
             },
             hint: '代码编辑器',
-            runFlag: false
+            runFlag: false,
+            base64Images: [],
+            testFlag: false,
+            // 轮播参数
+            swiperOption: {
+                // 开启循环模式
+                // loop: true,
+                // 显示分页
+                pagination: {
+                    el: '.swiper-pagination',
+                    type: 'bullets',
+                    clickable: true,
+                    hideOnClick: false
+                },
+                effect: 'slide',
+                // 设置点击箭头
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev'
+                },
+                direction: 'horizontal',
+                grabCursor: true,
+                roundLengths: true
+            }
         };
     },
     mounted: function() {
@@ -345,19 +393,25 @@ export default {
                 .replace(/\//g, '\\/')
                 .replace(/id="([^"]*)"/g, 'id="([^\\"]*)"')
                 .replace(/x="([^"]*)"/g, 'x="([^\\"]*)"')
-                .replace(/y="([^"]*)"/g, 'y="([^\\"]*)"');
+                .replace(/y="([^"]*)"/g, 'y="([^\\"]*)"')
+                .replace(/"x":([^"]*),/g, '"x":([^\\"]*),')
+                .replace(/"y":([^"]*),/g, '"y":([^\\"]*),')
+                .replace(/"z":([^"]*),/g, '"z":([^\\"]*),')
+                .replace(/"z":([^"]*)}/g, '"z":([^\\"]*)}')
+                .replace(/"w":([^"]*)}/g, '"w":([^\\"]*)}');
             const src = this._generateXml().outerHTML;
             const pos = src.search(new RegExp(reg));
             console.debug(pos);
             return pos === 0;
         },
         _loadXml(xml) {
+            // TODO
             const dom = typeof xml === 'string' ? Blockly.Xml.textToDom(xml) : xml;
             Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, this.workspace);
         },
         _generateCode() {
             const code = Blockly.JavaScript.workspaceToCode(this.workspace);
-            console.debug(code);
+            console.debug('_generateCode:', code);
             return code;
         },
         async _runCode() {
@@ -376,9 +430,15 @@ export default {
                 }
 
                 this.$message.success(`运行结束`, 2);
+                top.window.onOver && top.window.onOver();
+                this._getImages();
+                this.swiperOption.initialSlide = this.base64Images.length - 1;
+                this.testFlag = true;
+                if (typeof this.$refs.mySwiper !== 'undefined') {
+                    this.$refs.mySwiper.$swiper.slideTo(this.base64Images.length - 1);
+                }
             } catch (e) {
-                console.debug(e);
-                this.$message.fail(`运行失败: ${e}`, 2);
+                this.$message.error(`运行失败: ${e}`, 2);
             } finally {
                 this.buttons.run_button = false;
                 this.runFlag = false;
@@ -393,6 +453,22 @@ export default {
                     }
                 }
             }
+            // 点击或者选中时，将选中的对象赋值
+            if (event.element === 'click' || event.element === 'selected') {
+                let source = this._generateXml();
+                this.selectedBlock = source.querySelector(`block[id='${event.blockId}']`);
+            }
+        },
+        setBlockFieldText(blockId, fieldName, value) {
+            let beforeXml = this._generateXml();
+            let block = beforeXml.querySelector(`block[id='${blockId}']`);
+            let field = block.querySelector(`field[name='${fieldName}']`);
+            field.textContent = value;
+            console.debug('after block:', block, beforeXml);
+            Blockly.Xml.clearWorkspaceAndLoadFromXml(beforeXml, this.workspace);
+        },
+        updateWorkspace(sourceXml) {
+            Blockly.Xml.clearWorkspaceAndLoadFromXml(sourceXml, this.workspace);
         },
         _onTourComplete(id) {
             console.debug(`tour complete: ${id}`);
@@ -410,10 +486,46 @@ export default {
             console.debug(`experiment complete: ${experiment.experiment}`);
             this.experimentMode = false;
         },
-        _onImageInspectorClick(event) {
-            this.imageInspectorTitle = event.target.getAttribute('data-name');
-            this.imageInspectorData = event.target.toDataURL('image/png');
-            this.imageInspectorVisiable = true;
+        _onImageInspectorClick(index) {
+            this._getImages();
+            if (index < this.base64Images.length) {
+                this.swiperOption.initialSlide = index;
+                this.testFlag = true;
+                this.$refs.mySwiper.$swiper.slideTo(index);
+            }
+            // let event = window.event || arguments.callee.caller.arguments[0];
+            // let target = event.srcElement || event.target;
+            // this.imageInspectorTitle = target.getAttribute('data-name');
+            // this.imageInspectorData = target.toDataURL('image/png');
+            // this.imageInspectorVisiable = true;
+        },
+        _getImages() {
+            this.base64Images = [];
+            for (let index = 0; index < this.inspectorVariables.length; index++) {
+                if (this.inspectorVariables[index].id !== null) {
+                    const outputCanvas = document.getElementById(this.inspectorVariables[index].id);
+                    let base64 = outputCanvas.toDataURL('image/jpeg');
+                    if (
+                        base64 !=
+                        'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCACWASwDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AJVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//9k='
+                    ) {
+                        this.base64Images[index] = {
+                            id: this.inspectorVariables[index].id,
+                            title: this.inspectorVariables[index].name,
+                            url: base64
+                        };
+                    }
+                }
+            }
+        },
+        _prev() {
+            this.$refs.mySwiper.$swiper.slidePrev();
+        },
+        _next() {
+            this.$refs.mySwiper.$swiper.slideNext();
+        },
+        _handleOk() {
+            this.testFlag = false;
         }
     }
 };

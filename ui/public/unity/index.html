@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | SimulationDemo</title>
-    <style>
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            background: #292929;
-        }
-    </style>
-    <script src="Build/UnityLoader.js"></script>
-    <script>
-        top.window.gameInstance = UnityLoader.instantiate("unityContainer", "Build/zy.json", {
-            onProgress: function (sender, progress) {
-                top.window.onUnityProgress && top.window.onUnityProgress(sender, progress);
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Unity WebGL Player | SimulationDemo</title>
+        <style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                background: #292929;
             }
-        });
+        </style>
+        <script src="Build/UnityLoader.js"></script>
+        <script>
+            top.window.gameInstance = UnityLoader.instantiate('unityContainer', 'Build/zy.json', {
+                onProgress: function(sender, progress) {
+                    top.window.onUnityProgress && top.window.onUnityProgress(sender, progress);
+                }
+            });
 
-        function onUnityInitialized() {
-            top.window.onUnityInitialized && top.window.onUnityInitialized(top.window.gameInstance);
-        }
+            function onUnityInitialized() {
+                top.window.onUnityInitialized && top.window.onUnityInitialized(top.window.gameInstance);
+            }
 
-        function onSnapshot(data) {
-            top.window.onSnapshot && top.window.onSnapshot(top.window.gameInstance, data);
-        }
+            function onSignal() {
+                top.window.onSignal && top.window.onSignal(top.window.gameInstance);
+            }
 
-        function onSignal() {
-            top.window.onSignal && top.window.onSignal(top.window.gameInstance);
-        }
-    </script>
-</head>
+            function onSnapshot(data) {
+                top.window.onSnapshot && top.window.onSnapshot(top.window.gameInstance, data);
+            }
 
-<body style="margin: 0;">
-    <div id="unityContainer" style="width: 100%; height: 100%; margin: auto"></div>
-</body>
+            function onRecord(str) {
+                top.window.onRecord && top.window.onRecord(str);
+            }
+        </script>
+    </head>
 
+    <body style="margin: 0;">
+        <div id="unityContainer" style="width: 100%; height: 100%; margin: auto"></div>
+    </body>
 </html>

@@ -8,7 +8,7 @@ function resolve(dir) {
 
 module.exports = {
     devServer: {
-        port: 8081
+        port: 8082
     },
     chainWebpack: config => {
         config.entry('main').add('babel-polyfill');

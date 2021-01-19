@@ -3,7 +3,7 @@ export function buildSteps() {
         {
             steps: [
                 {
-                    intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/exam.html"></iframe>'
+                    intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/exam.html"></iframe>'
                 },
                 {
                     intro: '在开放实验空间中完成视觉抓取程序编写'

@@ -68,7 +68,8 @@ export default {
 
         const steps = [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/introduction.html"></iframe>'
+                intro:
+                    '<iframe frameborder="0" style="width:70vw; min-width: 1000px; height:80vh; min-height: 400px; magin: 10px;" scrolling="auto" src="guides/introduction.html"></iframe>'
             },
             {
                 intro: '观看完毕后点击 下一单元 按钮, 进入下一单元学习'

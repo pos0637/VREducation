@@ -9,6 +9,7 @@
                     <a-button type="primary" icon="right-square" style="margin-left: 8px" v-bind:disabled="!startExperiment" @click="_start">
                         {{ currentExperiment === null ? '开始实验' : experimentsFinish ? '实验完成' : '下一实验步骤' }}
                     </a-button>
+                    <a-button data-id="location_button" type="primary" icon="question" style="margin-left: 8px" @click="getLocat">获取坐标</a-button>
                     <a-button type="primary" icon="question" style="margin-left: 8px" @click="_restart">重新学习</a-button>
                     <a-button type="primary" icon="forward" style="margin-left: 8px" @click="_nextUnit">下一单元</a-button>
                 </a-col>
@@ -110,7 +111,10 @@ export default {
             experimentsFinish: false,
             loading: true,
             runFlag: false,
-            gameInstance: null
+            gameInstance: null,
+            // 发送给unity的坐标集合
+            poses: [],
+            grabFlag: false
         };
     },
     mounted() {
@@ -121,6 +125,9 @@ export default {
         };
 
         top.window.wait_for_sensor_signal = async () => {
+            this.poses = [];
+            this.grabFlag = false;
+            this.gameInstance.SendMessage('Unity2JS', 'SpwanSeal');
             while (this.runFlag && !signal) {
                 await sleep(1000);
             }
@@ -130,13 +137,12 @@ export default {
 
         let image = false;
         top.window.onSnapshot = (sender, data) => {
-            console.debug('onSnapshot');
             document.getElementById('experiment_image').src = 'data:image/png;base64,' + data;
             image = true;
         };
 
         top.window.camera_snapshot = async exposure => {
-            this.gameInstance.SendMessage('UintyConnectJS', 'Snapshot', (exposure / 10000).toString());
+            this.gameInstance.SendMessage('Unity2JS', 'Snapshot', (exposure / 10000).toString());
             while (this.runFlag && !image) {
                 await sleep(1000);
             }
@@ -225,12 +231,31 @@ export default {
 
         top.window.grab = async (sharp, center) => {
             console.debug(`sharp: ${sharp}, center: ${JSON.stringify(center)}`);
-            this.gameInstance.SendMessage('UintyConnectJS', 'Grab', `${center.x}:${center.y}`);
+            this.grabFlag = true;
+            this.poses.push({
+                position: {
+                    x: center.x,
+                    y: center.y,
+                    z: 0.0
+                },
+                quaternion: {
+                    x:0.0,
+                    y:0.0,
+                    z:0.0,
+                    w:1.0
+                }
+            })
+            const sendPoses = {
+                poses: this.poses
+            }
+            console.debug(`***grab-send***: ${JSON.stringify(sendPoses)}`)
+            this.gameInstance.SendMessage('Unity2JS', 'Grab', `${JSON.stringify(sendPoses)}`);
+            // this.gameInstance.SendMessage('Unity2JS', 'Grab', `${center.x}:${center.y}`);
         };
 
         let initialized = false;
         top.window.resetScene = async id => {
-            this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', id);
+            this.gameInstance.SendMessage('Unity2JS', 'SetScene', id);
             while (this.runFlag && !initialized) {
                 await sleep(1000);
             }
@@ -246,14 +271,41 @@ export default {
             } else {
                 setTimeout(() => {
                     console.debug('StartScene');
-                    this.gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                    this.gameInstance.SendMessage('Unity2JS', 'StartScene', '');
                     initialized = true;
                 }, 1);
             }
         };
 
+        top.window.onRecord = (currentLocat) => {
+            console.debug("getLocation==> ", currentLocat);
+            const currentLocation = JSON.parse(currentLocat);
+            const selectedBlock = this.$refs.codeEditor.selectedBlock;
+            this.$refs.codeEditor.setBlockFieldText(selectedBlock.id, 'position', JSON.stringify(currentLocation.position));
+            this.$refs.codeEditor.setBlockFieldText(selectedBlock.id, 'quaternion', JSON.stringify(currentLocation.quaternion));
+        }
+
+        top.window.addPoint = (positionValue, quaternionValue) => {
+            console.debug('positionValue', positionValue)
+            this.poses.push({
+                position: positionValue,
+                quaternion: quaternionValue
+            })
+        }
+
+        top.window.onOver = () => {
+            if (this.poses.length > 0 && !this.grabFlag) {
+                const sendPoses = {
+                    poses: this.poses
+                }
+                // this.gameInstance.SendMessage('Unity2JS', 'Play');
+                console.debug("func--onOver", JSON.stringify(sendPoses))
+                this.gameInstance.SendMessage('Unity2JS', 'Play', `${JSON.stringify(sendPoses)}`);
+            }
+        }
+
         this.gameInstance = top.window.gameInstance;
-        this.gameInstance.SendMessage('UintyConnectJS', 'SetScene', 3);
+        this.gameInstance.SendMessage('Unity2JS', 'SetScene', 3);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;
@@ -284,6 +336,19 @@ export default {
             this.startExperiment = true;
             this.experimentsFinish = false;
             this._start();
+        },
+        getLocat() {
+            const selectedBlock = this.$refs.codeEditor.selectedBlock;
+            if (selectedBlock !== null) {
+                if (selectedBlock.getAttribute('type') === 'linearmotion' || selectedBlock.getAttribute('type') === 'curvemovement') {
+                    console.log('Unity2JS--camera_snapshot')
+                    this.gameInstance.SendMessage('Unity2JS', 'Record');
+                } else {
+                    this.$message.error(`只能给直线运动或曲线运动代码块赋值`, 2);
+                }
+            } else {
+                    this.$message.error(`请点击需要赋值的代码块`, 2);
+            }            
         }
     }
 };

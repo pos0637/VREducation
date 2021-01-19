@@ -46,7 +46,7 @@ export default {
 
         const steps = [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/vision.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/vision.html"></iframe>'
             },
             {
                 intro: '实训完毕后点击 下一单元 按钮, 进入下一单元学习'
@@ -59,18 +59,18 @@ export default {
         const gameInstance = top.window.gameInstance;
         top.window.onUnityInitialized = () => {
             setTimeout(() => {
-                gameInstance.SendMessage('UintyConnectJS', 'StartScene', '');
+                gameInstance.SendMessage('Unity2JS', 'StartScene', '');
             }, 1);
         };
 
-        gameInstance.SendMessage('UintyConnectJS', 'SetScene', 4);
+        gameInstance.SendMessage('Unity2JS', 'SetScene', 4);
     },
     beforeDestroy() {
         top.window.onUnityInitialized = null;
     },
     methods: {
         _nextUnit() {
-            this.$store.commit('changeScene', { scene: 'experiment', stage: null, step: null });
+            this.$store.commit('changeScene', { scene: 'baseProgramming', stage: null, step: null });
         }
     }
 };

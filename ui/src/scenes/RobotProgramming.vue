@@ -47,7 +47,7 @@ export default {
 
         const steps = [
             {
-                intro: '<iframe frameborder="0" style="width: 500px; height: 400px; magin: 10px;" scrolling="auto" src="guides/programming.html"></iframe>'
+                intro: '<iframe frameborder="0" style="width: 70vw; height: 80vh; magin: 10px;" scrolling="auto" src="guides/programming.html"></iframe>'
             },
             {
                 intro: '学习完毕后点击 下一单元 按钮, 进入下一单元学习'
